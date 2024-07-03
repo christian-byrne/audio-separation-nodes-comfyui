@@ -1,0 +1,16 @@
+*.wav
+*.opus
+test.py
+**/__pycache__/
+
+effects.py
+time_stretch.py
+generation.py
+
+so_vits_svc
+tts
+models
+
+samples
+
+lut
