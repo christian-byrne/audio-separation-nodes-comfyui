@@ -29,8 +29,8 @@ class TempoMatch:
 
     def __init__(self):
         # TODO
-        self.UPPER_CLAMP = 1.0032
-        self.LOWER_CLAMP = 0.9968
+        self.UPPER_CLAMP = 1.0128
+        self.LOWER_CLAMP = 0.9872
 
     def estimate_tempo(self, waveform: torch.Tensor, sample_rate: int) -> float:
         if waveform.dim() == 3:
