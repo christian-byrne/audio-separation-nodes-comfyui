@@ -29,8 +29,8 @@ class TempoMatch:
 
     def __init__(self):
         # TODO
-        self.UPPER_CLAMP = 1.0024
-        self.LOWER_CLAMP = 0.8
+        self.UPPER_CLAMP = 1.0032
+        self.LOWER_CLAMP = 0.9968
 
     def estimate_tempo(self, waveform: torch.Tensor, sample_rate: int) -> float:
         if waveform.dim() == 3:
@@ -70,14 +70,16 @@ class TempoMatch:
         new_freq_1 = min(
             avg_tempo * input_sample_rate_1 / tempo_1,
             input_sample_rate_1 * self.UPPER_CLAMP,
-        )
+            # input_sample_rate_1
+        ) - 1
         # Clamp for now until
-        new_freq_1 = max(new_freq_1, input_sample_rate_1 * self.LOWER_CLAMP)
+        new_freq_1 = max(new_freq_1, input_sample_rate_1 * self.LOWER_CLAMP) + 1
         new_freq_2 = min(
             avg_tempo * input_sample_rate_2 / tempo_2,
             input_sample_rate_2 * self.UPPER_CLAMP,
-        )
-        new_freq_2 = max(new_freq_2, input_sample_rate_2 * self.LOWER_CLAMP)
+            # self.UPPER_CLAMP,
+        ) - 1
+        new_freq_2 = max(new_freq_2, input_sample_rate_2 * self.LOWER_CLAMP) + 1
         print(f"Clamped New Freq 1: {new_freq_1}, Clamped New Freq 2: {new_freq_2}")
 
         if new_freq_1 != input_sample_rate_1:

@@ -100,7 +100,7 @@ class AudioSeparation:
             resampled.append(
                 torchaudio.transforms.Resample(
                     orig_freq=self.model_sample_rate, new_freq=self.input_sample_rate_
-                )(source)
+                ).to(source.device)(source)
             )
         return resampled
 
