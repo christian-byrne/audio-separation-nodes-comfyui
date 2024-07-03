@@ -2,7 +2,9 @@
 *.opus
 test.py
 **/__pycache__/
-
+**/gen.py
+./gen.py
+gen.py
 effects.py
 time_stretch.py
 generation.py
