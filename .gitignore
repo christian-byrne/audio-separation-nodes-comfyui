@@ -8,6 +8,9 @@ gen.py
 effects.py
 time_stretch.py
 generation.py
+test*.py
+
+audio-formats.txt
 
 so_vits_svc
 tts

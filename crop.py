@@ -1,8 +1,4 @@
-import sys
-import os
 import torch
-
-sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
 from typing import Dict, Any
 
@@ -64,7 +60,9 @@ class AudioCrop:
             start_frame = 0
         if end_frame < 0:
             end_frame = 0
-        assert start_frame < end_frame, "AudioCrop: Start time must be less than end time"
+        assert (
+            start_frame < end_frame
+        ), "AudioCrop: Start time must be less than end time"
 
         return (
             {

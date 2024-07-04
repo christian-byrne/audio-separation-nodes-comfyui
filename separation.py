@@ -1,14 +1,10 @@
-import sys
-import os
-import torchaudio
 import torch
-from torchaudio.transforms import Fade
+from torchaudio.transforms import Fade, Resample
 from torchaudio.pipelines import HDEMUCS_HIGH_MUSDB_PLUS
 
-sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 import comfy.model_management
 
-from typing import List, Any, Dict
+from typing import Any, Dict
 
 
 class AudioSeparation:
@@ -46,7 +42,6 @@ class AudioSeparation:
         chunk_overlap: float = 0.1,
     ) -> Dict[str, Any]:
         device = comfy.model_management.get_torch_device()
-
         waveform: torch.Tensor = audio["waveform"]
         waveform = waveform.to(device).squeeze(0)
         self.input_sample_rate_: int = audio["sample_rate"]
@@ -54,6 +49,13 @@ class AudioSeparation:
         model = bundle.get_model()
         model.to(device)
         self.model_sample_rate = bundle.sample_rate
+
+        # Resample to model's expected sample rate
+        if self.input_sample_rate_ != self.model_sample_rate:
+            resample = Resample(
+                self.input_sample_rate_, self.model_sample_rate
+            ).to(device)
+            waveform = resample(waveform)
 
         ref = waveform.mean(0)
         waveform = (waveform - ref.mean()) / ref.std()  # Zs
@@ -68,52 +70,22 @@ class AudioSeparation:
             chunk_fade_shape=chunk_fade_shape,
         )[0]
         sources = sources * ref.std() + ref.mean()
-
         sources_list = model.sources
         sources = list(sources)
+        
+        return self.sources_to_tuple(dict(zip(sources_list, sources)))
 
-        if self.input_sample_rate_ != self.model_sample_rate:
-            sources = self.resample(sources)
-
-        out = self.sources_to_tuple(sources_list, sources)
-
-        return out
-
-    def filter(self, sources, filter_type):
-        if filter_type == "lowpass":
-            filtered = torchaudio.transforms.LowpassFilter(
-                self.input_sample_rate_, 1000
-            )
-        else:
-            filtered = torchaudio.transforms.LowpassFilter(
-                self.input_sample_rate_, 1000
-            )
-        filtered_sources = []
-        for source in sources:
-            filtered_sources.append(filtered(source))
-        return filtered_sources
-
-    def resample(self, sources):
-        resampled = []
-        for source in sources:
-            resampled.append(
-                torchaudio.transforms.Resample(
-                    orig_freq=self.model_sample_rate, new_freq=self.input_sample_rate_
-                ).to(source.device)(source)
-            )
-        return resampled
-
-    def sources_to_tuple(self, sources_names, sources, container=[]):
-        if len(sources) == 0:
-            return tuple(container)
-
-        audio_dict = {
-            "waveform": sources[0].cpu().unsqueeze(0),
-            "sample_rate": self.input_sample_rate_,
-        }
-        return self.sources_to_tuple(
-            sources_names[1:], sources[1:], container + [audio_dict]
-        )
+    def sources_to_tuple(self, sources: Dict[str, torch.Tensor]) -> tuple:
+        output_order = ["bass", "drums", "other", "vocals"]
+        outputs = []
+        for source in output_order:
+            if source not in sources:
+                raise ValueError(f"Missing source {source} in the output")
+            outputs.append({
+                "waveform": sources[source].cpu().unsqueeze(0),
+                "sample_rate": self.model_sample_rate,
+            })
+        return tuple(outputs)
 
     def separate_sources(
         self,

@@ -1,7 +1,5 @@
 """TODO: Can use TimeStretch instead"""
 
-import os
-import sys
 import torch
 import torchaudio
 import torchaudio.transforms
@@ -9,7 +7,6 @@ import librosa
 
 from typing import Any, Dict
 
-sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 import comfy.model_management
 
 
@@ -67,18 +64,24 @@ class TempoMatch:
             new_freq_2 = 1
 
         print(f"New Freq 1: {new_freq_1}, New Freq 2: {new_freq_2}")
-        new_freq_1 = min(
-            avg_tempo * input_sample_rate_1 / tempo_1,
-            input_sample_rate_1 * self.UPPER_CLAMP,
-            # input_sample_rate_1
-        ) - 1
+        new_freq_1 = (
+            min(
+                avg_tempo * input_sample_rate_1 / tempo_1,
+                input_sample_rate_1 * self.UPPER_CLAMP,
+                # input_sample_rate_1
+            )
+            - 1
+        )
         # Clamp for now until
         new_freq_1 = max(new_freq_1, input_sample_rate_1 * self.LOWER_CLAMP) + 1
-        new_freq_2 = min(
-            avg_tempo * input_sample_rate_2 / tempo_2,
-            input_sample_rate_2 * self.UPPER_CLAMP,
-            # self.UPPER_CLAMP,
-        ) - 1
+        new_freq_2 = (
+            min(
+                avg_tempo * input_sample_rate_2 / tempo_2,
+                input_sample_rate_2 * self.UPPER_CLAMP,
+                # self.UPPER_CLAMP,
+            )
+            - 1
+        )
         new_freq_2 = max(new_freq_2, input_sample_rate_2 * self.LOWER_CLAMP) + 1
         print(f"Clamped New Freq 1: {new_freq_1}, Clamped New Freq 2: {new_freq_2}")
 
