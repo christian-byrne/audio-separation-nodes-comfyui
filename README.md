@@ -14,7 +14,6 @@
 librosa==0.10.2
 torchaudio>=2.3.0
 numpy
-transformers
 ```
 
 ## Installation
