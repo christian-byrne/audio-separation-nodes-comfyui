@@ -1,4 +1,3 @@
-import torch
 import sys
 import os
 import torch
@@ -42,10 +41,11 @@ class AudioCrop:
         waveform: torch.Tensor = audio["waveform"]
         sample_rate: int = audio["sample_rate"]
 
+        # Assume that no ":" in input means that the user is trying to specify seconds
         if ":" not in start_time:
-            start_time = f"{start_time}:00"
+            start_time = f"00:{start_time}"
         if ":" not in end_time:
-            end_time = f"{end_time}:00"
+            end_time = f"00:{end_time}"
 
         start_seconds_time = 60 * int(start_time.split(":")[0]) + int(
             start_time.split(":")[1]
@@ -60,6 +60,11 @@ class AudioCrop:
         end_frame = end_seconds_time * sample_rate
         if end_frame >= waveform.shape[-1]:
             end_frame = waveform.shape[-1] - 1
+        if start_frame < 0:
+            start_frame = 0
+        if end_frame < 0:
+            end_frame = 0
+        assert start_frame < end_frame, "AudioCrop: Start time must be less than end time"
 
         return (
             {

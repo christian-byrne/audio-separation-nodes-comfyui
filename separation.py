@@ -1,15 +1,14 @@
-import torch
 import sys
 import os
 import torchaudio
-from torchaudio.transforms import Fade
 import torch
+from torchaudio.transforms import Fade
 from torchaudio.pipelines import HDEMUCS_HIGH_MUSDB_PLUS
 
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 import comfy.model_management
 
-from typing import Optional, List, Union, Any, Dict
+from typing import List, Any, Dict
 
 
 class AudioSeparation:

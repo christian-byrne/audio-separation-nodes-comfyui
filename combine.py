@@ -1,8 +1,7 @@
-import torch
 import sys
 import os
-import torchaudio
 import torch
+import torchaudio
 
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 from typing import Union, Any, Dict
