@@ -1,14 +1,12 @@
 """TODO: Can use TimeStretch instead"""
 
 import torch
-import torchaudio
-import torchaudio.transforms
 import librosa
 
-from typing import Tuple
-from _types import AUDIO
+from .resample import ChunkResampler
 
-import comfy.model_management
+from typing import Tuple
+from ._types import AUDIO
 
 
 class TempoMatch:
@@ -27,8 +25,8 @@ class TempoMatch:
 
     def __init__(self):
         # TODO
-        self.UPPER_CLAMP = 1.0128
-        self.LOWER_CLAMP = 0.9872
+        self.UPPER_CLAMP = 1.2
+        self.LOWER_CLAMP = 0.955
 
     def estimate_tempo(self, waveform: torch.Tensor, sample_rate: int) -> float:
         if waveform.dim() == 3:
@@ -50,55 +48,17 @@ class TempoMatch:
         waveform_2: torch.Tensor = audio_2["waveform"].squeeze(0)
         input_sample_rate_2: int = audio_2["sample_rate"]
 
-        device = comfy.model_management.get_torch_device()
         tempo_1 = self.estimate_tempo(waveform_1, input_sample_rate_1)
         tempo_2 = self.estimate_tempo(waveform_2, input_sample_rate_2)
-        print(f"Tempo 1: {tempo_1}, Tempo 2: {tempo_2}")
         avg_tempo = (tempo_1 + tempo_2) / 2
-        print(f"Avg Tempo: {avg_tempo}")
 
         new_freq_1 = avg_tempo * input_sample_rate_1 / tempo_1
-        if new_freq_1 < 1:
-            new_freq_1 = 1
         new_freq_2 = avg_tempo * input_sample_rate_2 / tempo_2
-        if new_freq_2 < 1:
-            new_freq_2 = 1
-
-        print(f"New Freq 1: {new_freq_1}, New Freq 2: {new_freq_2}")
-        new_freq_1 = (
-            min(
-                avg_tempo * input_sample_rate_1 / tempo_1,
-                input_sample_rate_1 * self.UPPER_CLAMP,
-                # input_sample_rate_1
-            )
-            - 1
-        )
-        # Clamp for now until
-        new_freq_1 = max(new_freq_1, input_sample_rate_1 * self.LOWER_CLAMP) + 1
-        new_freq_2 = (
-            min(
-                avg_tempo * input_sample_rate_2 / tempo_2,
-                input_sample_rate_2 * self.UPPER_CLAMP,
-                # self.UPPER_CLAMP,
-            )
-            - 1
-        )
-        new_freq_2 = max(new_freq_2, input_sample_rate_2 * self.LOWER_CLAMP) + 1
-        print(f"Clamped New Freq 1: {new_freq_1}, Clamped New Freq 2: {new_freq_2}")
 
         if new_freq_1 != input_sample_rate_1:
-            # TODO
-            waveform_1 = waveform_1.to(device)
-            resampler1 = torchaudio.transforms.Resample(
-                orig_freq=input_sample_rate_1, new_freq=int(new_freq_1)
-            ).to(device)
-            waveform_1 = resampler1(waveform_1).to("cpu")
+            waveform_1 = ChunkResampler(input_sample_rate_1, new_freq_1)(waveform_1)
         if new_freq_2 != input_sample_rate_2:
-            waveform_2 = waveform_2.to(device)
-            resampler2 = torchaudio.transforms.Resample(
-                orig_freq=input_sample_rate_2, new_freq=int(new_freq_2)
-            ).to(device)
-            waveform_2 = resampler2(waveform_2).to("cpu")
+            waveform_2 = ChunkResampler(input_sample_rate_2, new_freq_2)(waveform_2)
 
         return (
             {

@@ -1,7 +1,7 @@
 import torch
 
 from typing import Tuple
-from _types import AUDIO
+from ._types import AUDIO
 
 
 class AudioCrop:

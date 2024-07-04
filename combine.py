@@ -4,7 +4,7 @@ from torchaudio.transforms import Resample
 import comfy.model_management
 
 from typing import Tuple
-from _types import AUDIO
+from ._types import AUDIO
 
 
 class AudioCombine:

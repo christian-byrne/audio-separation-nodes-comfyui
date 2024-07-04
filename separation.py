@@ -5,7 +5,7 @@ from torchaudio.pipelines import HDEMUCS_HIGH_MUSDB_PLUS
 import comfy.model_management
 
 from typing import Any, Dict, Tuple
-from _types import AUDIO
+from ._types import AUDIO
 
 
 class AudioSeparation:
