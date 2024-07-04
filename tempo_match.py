@@ -1,9 +1,8 @@
-"""TODO: Can use TimeStretch instead"""
-
+import math
 import torch
 import librosa
 
-from .resample import ChunkResampler
+import torchaudio.functional as F
 
 from typing import Tuple
 from ._types import AUDIO
@@ -23,10 +22,64 @@ class TempoMatch:
     RETURN_TYPES = ("AUDIO", "AUDIO")
     CATEGORY = "audio"
 
-    def __init__(self):
-        # TODO
-        self.UPPER_CLAMP = 1.2
-        self.LOWER_CLAMP = 0.955
+    def time_shift(
+        self,
+        waveform: torch.Tensor,
+        rate: float,
+        fft_size: int = 2048,
+        hop_size: int = None,
+        win_length: int = None,
+    ) -> torch.Tensor:
+        """
+        Args:
+            waveform (torch.Tensor): Time-domain input of shape [channels, frames]
+            rate (float): rate to shift the waveform by
+            fft_size (int): Size of the FFT to be used (power of 2)
+            hop_size (int): Hop length for overlap (e.g., fft_size // 4)
+            win_length (int): Window size (often equal to fft_size)
+        """
+        if hop_size is None:
+            hop_size = fft_size // 4
+        if win_length is None:
+            win_length = fft_size
+
+        with torch.no_grad():
+            window = torch.hann_window(
+                win_length, device=waveform.device
+            )  # shape: [win_length]
+
+            stft = torch.stft(
+                waveform,
+                n_fft=fft_size,
+                hop_length=hop_size,
+                win_length=win_length,
+                window=window,
+                return_complex=True,  # We need complex STFT for phase vocoder
+            )  # shape: [channels, freq, time] (complex valued spectrogram) dtype: torch.cfloat
+            assert stft.dtype == torch.cfloat
+
+            phase_advance = torch.linspace(0, math.pi * hop_size, stft.shape[1])[
+                ..., None
+            ]  #  shape: [freq, 1]
+
+            stretched_stft = F.phase_vocoder(
+                stft, rate, phase_advance
+            )  # shape: [channels, freq, stretched_time]
+
+            # New time should be (time in complex spectogram / rate)
+            expected_time = math.ceil(stft.shape[2] / rate)
+            assert (
+                abs(stretched_stft.shape[2] - expected_time) < 3
+            ), f"Expected Time: {expected_time}, Stretched Time: {stretched_stft.shape[2]}"
+
+            # Get the waveform from the stretched STFT
+            return torch.istft(
+                stretched_stft,
+                n_fft=fft_size,
+                hop_length=hop_size,
+                win_length=win_length,
+                window=window,
+            )  # shape: [channels, time]
 
     def estimate_tempo(self, waveform: torch.Tensor, sample_rate: int) -> float:
         if waveform.dim() == 3:
@@ -52,13 +105,11 @@ class TempoMatch:
         tempo_2 = self.estimate_tempo(waveform_2, input_sample_rate_2)
         avg_tempo = (tempo_1 + tempo_2) / 2
 
-        new_freq_1 = avg_tempo * input_sample_rate_1 / tempo_1
-        new_freq_2 = avg_tempo * input_sample_rate_2 / tempo_2
-
-        if new_freq_1 != input_sample_rate_1:
-            waveform_1 = ChunkResampler(input_sample_rate_1, new_freq_1)(waveform_1)
-        if new_freq_2 != input_sample_rate_2:
-            waveform_2 = ChunkResampler(input_sample_rate_2, new_freq_2)(waveform_2)
+        rate_1 = avg_tempo / tempo_1
+        rate_2 = avg_tempo / tempo_2
+        
+        waveform_1 = self.time_shift(waveform_1, rate_1)
+        waveform_2 = self.time_shift(waveform_2, rate_2)
 
         return (
             {
