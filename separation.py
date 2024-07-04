@@ -4,7 +4,8 @@ from torchaudio.pipelines import HDEMUCS_HIGH_MUSDB_PLUS
 
 import comfy.model_management
 
-from typing import Any, Dict
+from typing import Any, Dict, Tuple
+from _types import AUDIO
 
 
 class AudioSeparation:
@@ -36,15 +37,17 @@ class AudioSeparation:
 
     def main(
         self,
-        audio: dict,
+        audio: AUDIO,
         chunk_fade_shape: str = "linear",
         chunk_length: float = 10.0,
         chunk_overlap: float = 0.1,
-    ) -> Dict[str, Any]:
+    ) -> Tuple[AUDIO, AUDIO, AUDIO, AUDIO]:
+
         device = comfy.model_management.get_torch_device()
         waveform: torch.Tensor = audio["waveform"]
         waveform = waveform.to(device).squeeze(0)
         self.input_sample_rate_: int = audio["sample_rate"]
+
         bundle = HDEMUCS_HIGH_MUSDB_PLUS
         model = bundle.get_model()
         model.to(device)
@@ -52,9 +55,9 @@ class AudioSeparation:
 
         # Resample to model's expected sample rate
         if self.input_sample_rate_ != self.model_sample_rate:
-            resample = Resample(
-                self.input_sample_rate_, self.model_sample_rate
-            ).to(device)
+            resample = Resample(self.input_sample_rate_, self.model_sample_rate).to(
+                device
+            )
             waveform = resample(waveform)
 
         ref = waveform.mean(0)
@@ -72,31 +75,36 @@ class AudioSeparation:
         sources = sources * ref.std() + ref.mean()
         sources_list = model.sources
         sources = list(sources)
-        
+
         return self.sources_to_tuple(dict(zip(sources_list, sources)))
 
-    def sources_to_tuple(self, sources: Dict[str, torch.Tensor]) -> tuple:
+    def sources_to_tuple(
+        self, sources: Dict[str, torch.Tensor]
+    ) -> Tuple[AUDIO, AUDIO, AUDIO, AUDIO]:
+
         output_order = ["bass", "drums", "other", "vocals"]
         outputs = []
         for source in output_order:
             if source not in sources:
                 raise ValueError(f"Missing source {source} in the output")
-            outputs.append({
-                "waveform": sources[source].cpu().unsqueeze(0),
-                "sample_rate": self.model_sample_rate,
-            })
+            outputs.append(
+                {
+                    "waveform": sources[source].cpu().unsqueeze(0),
+                    "sample_rate": self.model_sample_rate,
+                }
+            )
         return tuple(outputs)
 
     def separate_sources(
         self,
-        model,
-        mix,
-        sample_rate,
-        segment=10.0,
-        overlap=0.1,
-        device=None,
-        chunk_fade_shape="linear",
-    ):
+        model: torch.nn.Module,
+        mix: torch.Tensor,
+        sample_rate: int,
+        segment: float = 10.0,
+        overlap: float = 0.1,
+        device: str = None,
+        chunk_fade_shape: str = "linear",
+    ) -> torch.Tensor:
         """
         https://pytorch.org/audio/stable/tutorials/hybrid_demucs_tutorial.html
 

@@ -5,7 +5,8 @@ import torchaudio
 import torchaudio.transforms
 import librosa
 
-from typing import Any, Dict
+from typing import Tuple
+from _types import AUDIO
 
 import comfy.model_management
 
@@ -40,9 +41,9 @@ class TempoMatch:
 
     def main(
         self,
-        audio_1: dict,
-        audio_2: dict,
-    ) -> Dict[str, Any]:
+        audio_1: AUDIO,
+        audio_2: AUDIO,
+    ) -> Tuple[AUDIO, AUDIO]:
         waveform_1: torch.Tensor = audio_1["waveform"].squeeze(0)
         input_sample_rate_1: int = audio_1["sample_rate"]
 

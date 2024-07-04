@@ -1,6 +1,7 @@
 import torch
 
-from typing import Dict, Any
+from typing import Tuple
+from _types import AUDIO
 
 
 class AudioCrop:
@@ -30,10 +31,11 @@ class AudioCrop:
 
     def run(
         self,
-        audio: dict,
+        audio: AUDIO,
         start_time: str = "0:00",
         end_time: str = "1:00",
-    ) -> Dict[str, Any]:
+    ) -> Tuple[AUDIO]:
+        
         waveform: torch.Tensor = audio["waveform"]
         sample_rate: int = audio["sample_rate"]
 
@@ -60,6 +62,7 @@ class AudioCrop:
             start_frame = 0
         if end_frame < 0:
             end_frame = 0
+
         assert (
             start_frame < end_frame
         ), "AudioCrop: Start time must be less than end time"
