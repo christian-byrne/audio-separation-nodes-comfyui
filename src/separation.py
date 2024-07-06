@@ -1,3 +1,5 @@
+"""Credit: https://pytorch.org/audio/stable/tutorials/hybrid_demucs_tutorial.html"""
+
 import torch
 from torchaudio.transforms import Fade, Resample
 from torchaudio.pipelines import HDEMUCS_HIGH_MUSDB_PLUS

@@ -1,4 +1,5 @@
 import math
+import numpy as np
 import torch
 import librosa
 
@@ -54,9 +55,12 @@ class TempoMatch:
                 hop_length=hop_size,
                 win_length=win_length,
                 window=window,
-                return_complex=True,  # We need complex STFT for phase vocoder
-            )  # shape: [channels, freq, time] (complex valued spectrogram) dtype: torch.cfloat
-            assert stft.dtype == torch.cfloat
+                return_complex=True,  # Need complex STFT for phase vocoder
+            )  # shape: [channels, freq, time] (complex valued spectrogram) dtype: `torch.cfloat``
+
+            assert (
+                stft.dtype == torch.cfloat
+            ), f"Expected complex STFT, got dtype {stft.dtype}"
 
             phase_advance = torch.linspace(0, math.pi * hop_size, stft.shape[1])[
                 ..., None
@@ -72,22 +76,38 @@ class TempoMatch:
                 abs(stretched_stft.shape[2] - expected_time) < 3
             ), f"Expected Time: {expected_time}, Stretched Time: {stretched_stft.shape[2]}"
 
-            # Get the waveform from the stretched STFT
+            # Use Inverse STFT to convert back to time domain
             return torch.istft(
                 stretched_stft,
                 n_fft=fft_size,
                 hop_length=hop_size,
                 win_length=win_length,
                 window=window,
-            )  # shape: [channels, time]
+            )  # shape: [channels, frames]
 
     def estimate_tempo(self, waveform: torch.Tensor, sample_rate: int) -> float:
         if waveform.dim() == 3:
             waveform = waveform.squeeze(0)
-        assert waveform.dim() == 2
-        waveform = waveform.numpy()
-        onset_env = librosa.onset.onset_strength(y=waveform, sr=sample_rate)
-        tempo = librosa.beat.tempo(onset_envelope=onset_env, sr=sample_rate)
+        assert (
+            waveform.dim() == 2
+        ), f"Expected waveform to be [channels, frames], got {waveform.shape}"
+
+        onset_env = librosa.onset.onset_strength(
+            y=waveform.numpy(),
+            sr=sample_rate,
+            aggregate=np.median,  # Use median for tempo estimation, less sensitive to outliers
+        )
+
+        # Unused return value is the beat event locations array
+        tempo, _ = librosa.beat.beat_track(
+            onset_envelope=onset_env,
+            sr=sample_rate,
+            tightness=110,
+            sparse=False,
+            trim=True,
+        )
+        print(f"Estimated Tempo: {tempo}")
+
         return max(tempo[0][0], 1.0)
 
     def main(
@@ -107,7 +127,7 @@ class TempoMatch:
 
         rate_1 = avg_tempo / tempo_1
         rate_2 = avg_tempo / tempo_2
-        
+
         waveform_1 = self.time_shift(waveform_1, rate_1)
         waveform_2 = self.time_shift(waveform_2, rate_2)
 

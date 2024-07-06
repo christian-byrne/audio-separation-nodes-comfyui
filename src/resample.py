@@ -7,6 +7,15 @@ from typing import Union, Tuple
 
 
 class ChunkResampler:
+    """
+    a larger lowpass_filter_width results in a larger resampling kernel, and therefore increases computation time for both the kernel computation and convolution
+
+    using sinc_interp_kaiser results in longer computation times than the default sinc_interp_hann because it is more complex to compute the intermediate window values
+
+    a large GCD between the sample and resample rate will result in a simplification that allows for a smaller kernel and faster kernel computation.
+
+    """
+
     def __init__(
         self,
         orig_freq: Union[int, float],
@@ -75,14 +84,14 @@ class ChunkResampler:
         originals = (num1, num2)
         num1 = round(num1, 1)  # increase for more precision
         num2 = round(num2, 1)
-        
+
         if isinstance(num1, float) or isinstance(num2, float):
             while (isinstance(num1, float) and not num1.is_integer()) or (
                 isinstance(num2, float) and not num2.is_integer()
             ):
                 num1 *= 10
                 num2 *= 10
-        
+
         scaled_originals = (num1, num2)
         num1, num2 = int(num1), int(num2)
 
