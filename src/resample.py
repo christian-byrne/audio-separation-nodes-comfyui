@@ -73,33 +73,29 @@ class ChunkResampler:
             Tuple[int, int]: The reduced ratio.
         """
         originals = (num1, num2)
-
         num1 = round(num1, 1)  # increase for more precision
         num2 = round(num2, 1)
+        
         if isinstance(num1, float) or isinstance(num2, float):
             while (isinstance(num1, float) and not num1.is_integer()) or (
                 isinstance(num2, float) and not num2.is_integer()
             ):
                 num1 *= 10
                 num2 *= 10
+        
         scaled_originals = (num1, num2)
         num1, num2 = int(num1), int(num2)
 
-        attempts = 0
-        max_attempts = 128 if max(num1, num2) < 200_000 else 32
         if num1 < num2:
-            attempts += 1
-            if attempts == max_attempts:
-                print(
-                    f"Warning: Could not reduce {originals} to integer ratio after {attempts} attempts."
-                    + "Forced to round."
-                )
-                return int(originals[0]), int(originals[1])
             num1, num2 = num2, num1
 
+        attempts = 0
+        max_attempts = 128 if max(num1, num2) < 200_000 else 32
         while num2 != 0:
-            attempts += 1
+            if attempts == max_attempts:
+                return int(originals[0]), int(originals[1])
             num1, num2 = num2, num1 % num2
+            attempts += 1
 
         gcd = num1
 

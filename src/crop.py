@@ -25,11 +25,11 @@ class AudioCrop:
             },
         }
 
-    FUNCTION = "run"
+    FUNCTION = "main"
     RETURN_TYPES = ("AUDIO",)
     CATEGORY = "audio"
 
-    def run(
+    def main(
         self,
         audio: AUDIO,
         start_time: str = "0:00",
