@@ -44,24 +44,24 @@ class AudioCombine:
         if input_sample_rate_1 != input_sample_rate_2:
             device = comfy.model_management.get_torch_device()
             if input_sample_rate_1 < input_sample_rate_2:
-                resample = Resample(input_sample_rate_1, input_sample_rate_2).to(
-                    device
-                )
-                waveform_1 = resample(waveform_1.to(device))
+                resample = Resample(input_sample_rate_1, input_sample_rate_2).to(device)
+                waveform_1: torch.Tensor = resample(waveform_1.to(device))
+                waveform_1.to("cpu")
                 output_sample_rate = input_sample_rate_2
             else:
-                resample = Resample(input_sample_rate_2, input_sample_rate_1).to(
-                    device
-                )
-                waveform_2 = resample(waveform_2.to(device))
+                resample = Resample(input_sample_rate_2, input_sample_rate_1).to(device)
+                waveform_2: torch.Tensor = resample(waveform_2.to(device))
+                waveform_2.to("cpu")
                 output_sample_rate = input_sample_rate_1
         else:
             output_sample_rate = input_sample_rate_1
 
         # Ensure the audio is the same length
         min_length = min(waveform_1.shape[-1], waveform_2.shape[-1])
-        waveform_1 = waveform_1[..., :min_length]
-        waveform_2 = waveform_2[..., :min_length]
+        if waveform_1.shape[-1] != min_length:
+            waveform_1 = waveform_1[..., :min_length]
+        if waveform_2.shape[-1] != min_length:
+            waveform_2 = waveform_2[..., :min_length]
 
         # Combine the audio
         if method == "add":
@@ -77,7 +77,7 @@ class AudioCombine:
 
         return (
             {
-                "waveform": waveform.to("cpu"),
+                "waveform": waveform,
                 "sample_rate": output_sample_rate,
             },
         )
