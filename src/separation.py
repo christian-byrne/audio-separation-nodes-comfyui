@@ -4,7 +4,7 @@ from torchaudio.pipelines import HDEMUCS_HIGH_MUSDB_PLUS
 
 import comfy.model_management
 
-from typing import Any, Dict, Tuple
+from typing import Dict, Tuple
 from ._types import AUDIO
 
 

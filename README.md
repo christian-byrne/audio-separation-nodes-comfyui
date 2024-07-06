@@ -3,10 +3,10 @@
 
 ## Examples
 
-- [audio file with workflow](./examples/ComfyUI_temp_ksudt_00002_.flac)
-- [audio file with workflow](./examples/ComfyUI_00002_.flac)
-- [audio file with workflow](./examples/ComfyUI_00003_.flac)
-- [audio file with workflow](./examples/ComfyUI_00095_.flac)
+- [audio file with workflow](./wiki/examples/ComfyUI_temp_ksudt_00002_.flac)
+- [audio file with workflow](./wiki/examples/ComfyUI_00002_.flac)
+- [audio file with workflow](./wiki/examples/ComfyUI_00003_.flac)
+- [audio file with workflow](./wiki/examples/ComfyUI_00095_.flac)
 
 ## Requirements
 

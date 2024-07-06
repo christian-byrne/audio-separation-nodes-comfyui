@@ -9,13 +9,11 @@ effects.py
 time_stretch.py
 generation.py
 test*.py
-
+wiki/demos
+wiki/demos/*
 audio-formats.txt
-
 so_vits_svc
 tts
 models
-
 samples
-
 lut
