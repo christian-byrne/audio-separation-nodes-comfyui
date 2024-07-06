@@ -35,7 +35,7 @@ class AudioCrop:
         start_time: str = "0:00",
         end_time: str = "1:00",
     ) -> Tuple[AUDIO]:
-        
+
         waveform: torch.Tensor = audio["waveform"]
         sample_rate: int = audio["sample_rate"]
 

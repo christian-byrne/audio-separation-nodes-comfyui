@@ -63,17 +63,17 @@ class AudioCombine:
         if waveform_2.shape[-1] != min_length:
             waveform_2 = waveform_2[..., :min_length]
 
-        # Combine the audio
-        if method == "add":
-            waveform = waveform_1 + waveform_2
-        elif method == "subtract":
-            waveform = waveform_1 - waveform_2
-        elif method == "multiply":
-            waveform = waveform_1 * waveform_2
-        elif method == "divide":
-            waveform = waveform_1 / waveform_2
-        elif method == "mean":
-            waveform = (waveform_1 + waveform_2) / 2
+        match method:
+            case "add":
+                waveform = waveform_1 + waveform_2
+            case "subtract":
+                waveform = waveform_1 - waveform_2
+            case "multiply":
+                waveform = waveform_1 * waveform_2
+            case "divide":
+                waveform = waveform_1 / waveform_2
+            case "mean":
+                waveform = (waveform_1 + waveform_2) / 2
 
         return (
             {

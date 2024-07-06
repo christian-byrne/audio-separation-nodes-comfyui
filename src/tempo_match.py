@@ -95,7 +95,7 @@ class TempoMatch:
         onset_env = librosa.onset.onset_strength(
             y=waveform.numpy(),
             sr=sample_rate,
-            aggregate=np.median,  # Use median for tempo estimation, less sensitive to outliers
+            aggregate=np.median,
         )
 
         # Unused return value is the beat event locations array
@@ -106,7 +106,6 @@ class TempoMatch:
             sparse=False,
             trim=True,
         )
-        print(f"Estimated Tempo: {tempo}")
 
         return max(tempo[0][0], 1.0)
 
