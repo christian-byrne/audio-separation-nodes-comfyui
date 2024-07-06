@@ -43,14 +43,13 @@ class AudioSeparation:
         chunk_overlap: float = 0.1,
     ) -> Tuple[AUDIO, AUDIO, AUDIO, AUDIO]:
 
-        device = comfy.model_management.get_torch_device()
+        device: torch.device = comfy.model_management.get_torch_device()
         waveform: torch.Tensor = audio["waveform"]
         waveform = waveform.to(device).squeeze(0)
         self.input_sample_rate_: int = audio["sample_rate"]
 
         bundle = HDEMUCS_HIGH_MUSDB_PLUS
-        model = bundle.get_model()
-        model.to(device)
+        model: torch.nn.Module = bundle.get_model().to(device)
         self.model_sample_rate = bundle.sample_rate
 
         # Resample to model's expected sample rate
@@ -102,7 +101,7 @@ class AudioSeparation:
         sample_rate: int,
         segment: float = 10.0,
         overlap: float = 0.1,
-        device: str = None,
+        device: torch.device = None,
         chunk_fade_shape: str = "linear",
     ) -> torch.Tensor:
         """
