@@ -1,3 +1,5 @@
+import os
+import platform
 import tempfile
 from pathlib import Path
 
@@ -9,6 +11,7 @@ from typing import Tuple
 from ._types import AUDIO
 
 import folder_paths
+
 
 class AudioVideoCombine:
     @classmethod
@@ -31,6 +34,14 @@ class AudioVideoCombine:
                         "default": "1:00",
                     },
                 ),
+                "auto_open": (
+                    "BOOLEAN",
+                    {
+                        "default": False,
+                        "label_on": "Auto open after combining",
+                        "description": "Don't auto open after combining",
+                    },
+                ),
             },
         }
 
@@ -46,6 +57,7 @@ class AudioVideoCombine:
         video_path: str = "/path/to/video.mp4",
         video_start_time: str = "0:00",
         video_end_time: str = "1:00",
+        auto_open: bool = False,
     ) -> Tuple[str]:
 
         waveform: torch.Tensor = audio["waveform"]
@@ -71,15 +83,15 @@ class AudioVideoCombine:
             start_seconds_time < end_seconds_time
         ), "AudioVideoCombine: Start time must be less than end time. Start time cannot be after video ends."
 
+        output_dir = Path(folder_paths.get_output_directory())
         filename = input_path.stem
         new_filename = f"{filename}_0_combined.mp4"
-        output_dir = Path(folder_paths.get_output_directory())
         index = 0
         while new_filename in [f.name for f in output_dir.iterdir()]:
             index += 1
             new_filename = f"{filename}_{index}_combined.mp4"
 
-        new_filepath = output_dir / new_filename
+        new_filepath = str(output_dir / new_filename)
 
         with tempfile.NamedTemporaryFile(suffix=".wav") as f:
             torchaudio.save(f.name, waveform.squeeze(0), sample_rate=sample_rate)
@@ -87,6 +99,14 @@ class AudioVideoCombine:
             video = video.subclip(start_seconds_time, end_seconds_time)
             audio = AudioFileClip(f.name)
             video = video.set_audio(audio)
-            video.write_videofile(str(new_filepath), codec="libx264", audio_codec="aac")
+            video.write_videofile(new_filepath, codec="libx264", audio_codec="aac")
+
+        if auto_open:
+            if platform.system() == "Darwin":
+                os.system(f"open {new_filepath}")
+            elif platform.system() == "Windows":
+                os.system(f"start {new_filepath}")
+            else:
+                os.system(f"xdg-open {new_filepath}")
 
         return (str(new_filepath),)
