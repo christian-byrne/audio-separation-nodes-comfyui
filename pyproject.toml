@@ -3,13 +3,13 @@ name = "audio-separation-nodes-comfyui"
 description = "Nodes:AudioSeparation, AudioCrop, AudioCombine, AudioTempoMatch."
 version = "1.0.0"
 license = "LICENSE"
-dependencies = ["ipython==8.14.0", "librosa==0.10.2", "numpy==1.24.2", "torchaudio==2.3.1", "transformers"]
+dependencies = ["librosa==0.10.2", "numpy", "torchaudio>=2.3.0", "transformers"]
 
 [project.urls]
 Repository = "https://github.com/christian-byrne/audio-separation-nodes-comfyui"
 #  Used by Comfy Registry https://comfyregistry.org
 
 [tool.comfy]
-PublisherId = ""
+PublisherId = "christian-byrne"
 DisplayName = "audio-separation-nodes-comfyui"
 Icon = ""
