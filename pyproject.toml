@@ -1,9 +1,9 @@
 [project]
 name = "audio-separation-nodes-comfyui"
-description = "Nodes:AudioSeparation, AudioCrop, AudioCombine, AudioTempoMatch."
+description = "Separate audio track into stems (vocals, bass, drums, other). Along with tools to recombine, tempo match, slice/crop audio"
 version = "1.0.0"
 license = "LICENSE"
-dependencies = ["librosa==0.10.2", "numpy", "torchaudio>=2.3.0", "transformers"]
+dependencies = ["librosa==0.10.2", "numpy", "torchaudio>=2.3.0"]
 
 [project.urls]
 Repository = "https://github.com/christian-byrne/audio-separation-nodes-comfyui"
@@ -12,4 +12,4 @@ Repository = "https://github.com/christian-byrne/audio-separation-nodes-comfyui"
 [tool.comfy]
 PublisherId = "christian-byrne"
 DisplayName = "audio-separation-nodes-comfyui"
-Icon = ""
+Icon = "https://img.icons8.com/?size=100&id=gSULe4i1JTpL&format=png&color=000000"
