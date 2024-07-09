@@ -42,7 +42,7 @@ class AudioCombine:
 
         # Resample the audio if the sample rates are different
         if input_sample_rate_1 != input_sample_rate_2:
-            device = comfy.model_management.get_torch_device()
+            device: torch.device = comfy.model_management.get_torch_device()
             if input_sample_rate_1 < input_sample_rate_2:
                 resample = Resample(input_sample_rate_1, input_sample_rate_2).to(device)
                 waveform_1: torch.Tensor = resample(waveform_1.to(device))

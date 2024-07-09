@@ -65,7 +65,7 @@ class AudioCrop:
 
         assert (
             start_frame < end_frame
-        ), "AudioCrop: Start time must be less than end time"
+        ), "AudioCrop: Start time must be less than end time and be within the audio length."
 
         return (
             {

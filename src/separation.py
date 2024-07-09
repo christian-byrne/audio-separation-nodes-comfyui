@@ -47,7 +47,7 @@ class AudioSeparation:
 
         device: torch.device = comfy.model_management.get_torch_device()
         waveform: torch.Tensor = audio["waveform"]
-        waveform = waveform.to(device).squeeze(0)
+        waveform = waveform.squeeze(0).to(device)
         self.input_sample_rate_: int = audio["sample_rate"]
 
         bundle = HDEMUCS_HIGH_MUSDB_PLUS
