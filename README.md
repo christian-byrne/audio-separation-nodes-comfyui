@@ -4,7 +4,7 @@
 
 ![Demo video - isolating vocals song](./wiki/videos/isolate-vocals-song.mp4)
 
-![Demo video - isolating vocals movie scene](./wiki/videos/isolate-vocals-video.mp4)
+![Demo video - isolating vocals movie scene](https://github.com/christian-byrne/audio-separation-nodes-comfyui/blob/master/wiki/videos/isolate-vocals-video.mp4)
 
 # Workflow Examples
 
