@@ -17,3 +17,5 @@ tts
 models
 samples
 lut
+video-editing/
+video-editing/**/**

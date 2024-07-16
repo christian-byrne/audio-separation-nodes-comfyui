@@ -101,12 +101,13 @@ class AudioVideoCombine:
             video = video.set_audio(audio)
             video.write_videofile(new_filepath, codec="libx264", audio_codec="aac")
 
+        new_filepath = os.path.normpath(new_filepath)
         if auto_open:
             if platform.system() == "Darwin":
-                os.system(f"open {new_filepath}")
+                os.system(f'open "{new_filepath}"')
             elif platform.system() == "Windows":
-                os.system(f"start {new_filepath}")
+                os.system(f'start "{new_filepath}"')
             else:
-                os.system(f"xdg-open {new_filepath}")
+                os.system(f'xdg-open "{new_filepath}"')
 
         return (str(new_filepath),)
