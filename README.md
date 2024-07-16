@@ -2,7 +2,7 @@
 ![worklow picture](./wiki/pics/Selection_016.png)
 
 
-![Demo video - isolating vocals song](./wiki/videos/isolate-vocals-song.mp4)
+![Demo video - isolating vocals song](./wiki/videos/isolate-vocals-matrix-smaller.mp4)
 
 ![Demo video - isolating vocals movie scene](https://github.com/christian-byrne/audio-separation-nodes-comfyui/blob/master/wiki/videos/isolate-vocals-video.mp4)
 
@@ -18,7 +18,7 @@
 >
 > - [workflow.json](./wiki/workflows/isolate-vocals-video.json)
 > - Example output:
->     ![example output](./wiki/videos/isolate-vocals-video.mp4)
+>     ![example output](./wiki/videos/isolate-vocals-matrix-smaller.mp4)
 > 
 > </details>
 > 
