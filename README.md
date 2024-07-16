@@ -2,79 +2,75 @@
 ![worklow picture](./wiki/pics/Selection_016.png)
 
 
-![Demo video - isolating vocals song](./wiki/videos/isolate-vocals-matrix-smaller.mp4)
 
-![Demo video - isolating vocals movie scene](https://github.com/christian-byrne/audio-separation-nodes-comfyui/blob/master/wiki/videos/isolate-vocals-video.mp4)
+https://github.com/user-attachments/assets/c5cf20de-a17f-438d-81ac-0c392af669cf
 
-# Workflow Examples
+
+
+# Examples
 
 #### *`Separating Voices in a Video`*
 
->
->
-> <details>
->
-> <summary> &nbsp; Show </summary>
->
-> - [workflow.json](./wiki/workflows/isolate-vocals-video.json)
-> - Example output:
->     ![example output](./wiki/videos/isolate-vocals-matrix-smaller.mp4)
-> 
-> </details>
-> 
+<details>
+
+<summary> &nbsp; Show </summary>
+
+[workflow.json](./wiki/workflows/isolate-vocals-video.json)
+
+https://github.com/user-attachments/assets/c5af418e-7137-4c36-b86e-3352cf558ea8
+
+</details>
+
+
+
+
 
 
 #### *`Separating Song Vocals`*
 
->
->
-> <details>
->
-> <summary> &nbsp; Show </summary>
->
-> - [workflow.json](./wiki/workflows/isolate-vocals-song.json)
-> - Example:
->     ![example output](./wiki/videos/isolate-vocals-song.mp4)
-> 
->
-> </details>
-> 
+<details>
+
+<summary> &nbsp; Show </summary>
+
+[workflow.json](./wiki/workflows/isolate-vocals-song.json)
+
+https://github.com/user-attachments/assets/c5cf20de-a17f-438d-81ac-0c392af669cf
+
+</details>
+
 
 
 #### *`Replacing BGM with Generated BGM`*
 
->
->
-> <details>
->
-> <summary> &nbsp; Show </summary>
->
-> &nbsp; *For example, to replace copyrighted BGM with new music that has the same mood*.
->
-> - [workflow json](./wiki/workflows/replace-bgm.json)
-> - Example output:
->     ![example output](./wiki/videos/bgm-replace.mp4)
->   - *NOTE*: In order to load videos into the LoadAudio Node, change [this line](https://github.com/comfyanonymous/ComfyUI/blob/faa57430b0ff882275b1afcf6610e8e9f8a5929b/comfy_extras/nodes_audio.py#L185) in your comfy install to include the `.ext` (e.g., `.mp4`)
->
-> </details>
+<details>
+  
+<summary> &nbsp; Show </summary>
+
+*For example, to replace copyrighted BGM with new music that has the same mood*.
+
+*NOTE*: In order to load videos into the LoadAudio Node, change [this line](https://github.com/comfyanonymous/ComfyUI/blob/faa57430b0ff882275b1afcf6610e8e9f8a5929b/comfy_extras/nodes_audio.py#L185) in your comfy install to include the `.ext` (e.g., `.mp4`)
+
+[workflow json](./wiki/workflows/replace-bgm.json)
+
+https://github.com/user-attachments/assets/a7d5656b-5f8b-439a-936f-6ebb6a0d538a
+
+</details>
 
 
 #### *`Remixing Songs with StableAudio`*
 
->
->
-> <details>
->
-> <summary> &nbsp; Show </summary>
->
-> - [workflow json](./wiki/workflows/remix-songs.json)
-> - [example output (audio file) with embedded workflow](./wiki/examples/ComfyUI_temp_ksudt_00002_.flac)
-> - [example output (audio file) with embedded workflow](./wiki/examples/ComfyUI_00002_.flac)
->
-> </details>
+
+<details>
+
+<summary> &nbsp; Show </summary>
+
+- [workflow json](./wiki/workflows/remix-songs.json)
+- [example output (audio file) with embedded workflow](./wiki/examples/ComfyUI_temp_ksudt_00002_.flac)
+- [example output (audio file) with embedded workflow](./wiki/examples/ComfyUI_00002_.flac)
+
+</details>
 
 
-&nbsp;
 
 # Requirements
 
