@@ -1,0 +1,24 @@
+version: 2
+updates:
+  # Configuration for python
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      time: "03:00"
+      # Disable all pull requests for Docker dependencies
+    open-pull-requests-limit: 4
+    reviewers:
+      - "christian-byrne"
+    ignore:
+      # Ignore updates to packages that start with 'torch'
+      # Wildcards match zero or more arbitrary characters
+      - dependency-name: "torch*"
+        update-types: ["all"]
+      # Ignore some updates to the 'express' package
+      # - dependency-name: "express"
+        # Ignore only new versions for 4.x and 5.x
+        # versions: ["4.x", "5.x"]
+      # For all packages, ignore all patch updates
+      - dependency-name: "*"
+        update-types: ["version-update:semver-patch"]
