@@ -2,7 +2,6 @@
 ![worklow picture](./wiki/pics/Selection_016.png)
 
 
-
 https://github.com/user-attachments/assets/c5cf20de-a17f-438d-81ac-0c392af669cf
 
 
@@ -26,21 +25,8 @@ https://github.com/user-attachments/assets/c5af418e-7137-4c36-b86e-3352cf558ea8
 
 
 
-#### *`Separating Song Vocals`*
 
-<details>
-
-<summary> &nbsp; Show </summary>
-
-[workflow.json](./wiki/workflows/isolate-vocals-song.json)
-
-https://github.com/user-attachments/assets/c5cf20de-a17f-438d-81ac-0c392af669cf
-
-</details>
-
-
-
-#### *`Replacing BGM with Generated BGM`*
+#### *`Replacing BGM with StableAudio-Generated BGM`*
 
 <details>
   
@@ -65,12 +51,40 @@ https://github.com/user-attachments/assets/a7d5656b-5f8b-439a-936f-6ebb6a0d538a
 <summary> &nbsp; Show </summary>
 
 - [workflow json](./wiki/workflows/remix-songs.json)
-- [example output (audio file) with embedded workflow](./wiki/examples/ComfyUI_temp_ksudt_00002_.flac)
+- [example output (audio file) with embedded workflow](./wiki/examples/ComfyUI_temp_iaepj_00001_.flac)
 - [example output (audio file) with embedded workflow](./wiki/examples/ComfyUI_00002_.flac)
 
 </details>
 
 
+#### *`Separating Song Vocals`*
+
+<details>
+
+<summary> &nbsp; Show </summary>
+
+[workflow.json](./wiki/workflows/isolate-vocals-song.json)
+
+https://github.com/user-attachments/assets/c5cf20de-a17f-438d-81ac-0c392af669cf
+
+</details>
+
+
+
+
+#### *`Extracting Instrumentals from Songs`*
+
+
+<details>
+
+<summary> &nbsp; Show </summary>
+
+- [workflow json](./wiki/workflows/extract-instrumental.json)
+
+</details>
+
+
+&nbsp;
 
 # Requirements
 

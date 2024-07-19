@@ -107,7 +107,7 @@ class AudioSeparation:
         chunk_fade_shape: str = "linear",
     ) -> torch.Tensor:
         """
-        https://pytorch.org/audio/stable/tutorials/hybrid_demucs_tutorial.html
+        From: https://pytorch.org/audio/stable/tutorials/hybrid_demucs_tutorial.html
 
         Apply model to a given mixture. Use fade, and add segments together in order to add model segment by segment.
 

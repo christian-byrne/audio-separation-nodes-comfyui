@@ -38,7 +38,6 @@ class ChunkResampler:
             self.new_freq = self.orig_freq * self.LOWER_CLAMP
 
         diff = abs(1 - change_ratio)
-        print(f"Change Ratio: {change_ratio}, Diff: {diff}")
         if diff > 0.08:
             self.chunk_size_seconds = min(self.chunk_size_seconds, 1)
         elif diff > 0.002:
@@ -46,13 +45,9 @@ class ChunkResampler:
         else:
             self.chunk_size_seconds = min(self.chunk_size_seconds, 4)
 
-        print(f"Chunk Size: {self.chunk_size_seconds}")
-
         # If the frequencies are float, try to convert to int while
         # maintaining ratio (https://github.com/pytorch/audio/issues/1487).
         self.orig_freq, self.new_freq = ChunkResampler.reduce_ratio(orig_freq, new_freq)
-        print(f"Orig Freq: {self.orig_freq}, New Freq: {self.new_freq}")
-
         self.device = comfy.model_management.get_torch_device()
         self.resample = Resample(self.orig_freq, self.new_freq).to(self.device)
 

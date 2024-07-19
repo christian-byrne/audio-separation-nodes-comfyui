@@ -1,0 +1,278 @@
+{
+  "last_node_id": 21,
+  "last_link_id": 26,
+  "nodes": [
+    {
+      "id": 11,
+      "type": "AudioSeparation",
+      "pos": [
+        45,
+        494
+      ],
+      "size": {
+        "0": 315,
+        "1": 166
+      },
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "audio",
+          "type": "AUDIO",
+          "link": 25
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Bass",
+          "type": "AUDIO",
+          "links": [
+            20
+          ],
+          "shape": 3,
+          "slot_index": 0
+        },
+        {
+          "name": "Drums",
+          "type": "AUDIO",
+          "links": [
+            21
+          ],
+          "shape": 3,
+          "slot_index": 1
+        },
+        {
+          "name": "Other",
+          "type": "AUDIO",
+          "links": [
+            23
+          ],
+          "shape": 3,
+          "slot_index": 2
+        },
+        {
+          "name": "Vocals",
+          "type": "AUDIO",
+          "links": [],
+          "shape": 3,
+          "slot_index": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "AudioSeparation"
+      },
+      "widgets_values": [
+        "half_sine",
+        16,
+        0.1
+      ]
+    },
+    {
+      "id": 19,
+      "type": "AudioCombine",
+      "pos": [
+        474,
+        503
+      ],
+      "size": {
+        "0": 315,
+        "1": 78
+      },
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "audio_1",
+          "type": "AUDIO",
+          "link": 20
+        },
+        {
+          "name": "audio_2",
+          "type": "AUDIO",
+          "link": 21
+        }
+      ],
+      "outputs": [
+        {
+          "name": "AUDIO",
+          "type": "AUDIO",
+          "links": [
+            22
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "AudioCombine"
+      },
+      "widgets_values": [
+        "add"
+      ]
+    },
+    {
+      "id": 10,
+      "type": "LoadAudio",
+      "pos": [
+        -441,
+        496
+      ],
+      "size": {
+        "0": 381.5714111328125,
+        "1": 144
+      },
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "AUDIO",
+          "type": "AUDIO",
+          "links": [
+            25
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LoadAudio"
+      },
+      "widgets_values": [
+        "06 Madonna.mp3",
+        null,
+        ""
+      ]
+    },
+    {
+      "id": 20,
+      "type": "AudioCombine",
+      "pos": [
+        859,
+        584
+      ],
+      "size": {
+        "0": 315,
+        "1": 78
+      },
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "audio_1",
+          "type": "AUDIO",
+          "link": 22
+        },
+        {
+          "name": "audio_2",
+          "type": "AUDIO",
+          "link": 23
+        }
+      ],
+      "outputs": [
+        {
+          "name": "AUDIO",
+          "type": "AUDIO",
+          "links": [
+            26
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "AudioCombine"
+      },
+      "widgets_values": [
+        "add"
+      ]
+    },
+    {
+      "id": 21,
+      "type": "SaveAudio",
+      "pos": [
+        1255,
+        585
+      ],
+      "size": {
+        "0": 315,
+        "1": 100
+      },
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "audio",
+          "type": "AUDIO",
+          "link": 26
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "SaveAudio"
+      },
+      "widgets_values": [
+        "audio/instrumentals/track",
+        null
+      ]
+    }
+  ],
+  "links": [
+    [
+      20,
+      11,
+      0,
+      19,
+      0,
+      "AUDIO"
+    ],
+    [
+      21,
+      11,
+      1,
+      19,
+      1,
+      "AUDIO"
+    ],
+    [
+      22,
+      19,
+      0,
+      20,
+      0,
+      "AUDIO"
+    ],
+    [
+      23,
+      11,
+      2,
+      20,
+      1,
+      "AUDIO"
+    ],
+    [
+      25,
+      10,
+      0,
+      11,
+      0,
+      "AUDIO"
+    ],
+    [
+      26,
+      20,
+      0,
+      21,
+      0,
+      "AUDIO"
+    ]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {},
+  "version": 0.4
+}
