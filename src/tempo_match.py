@@ -88,9 +88,8 @@ class TempoMatch:
     def estimate_tempo(self, waveform: torch.Tensor, sample_rate: int) -> float:
         if waveform.dim() == 3:
             waveform = waveform.squeeze(0)
-        assert (
-            waveform.dim() == 2
-        ), f"Expected waveform to be [channels, frames], got {waveform.shape}"
+        if waveform.dim() != 2:
+            raise TypeError(f"Expected waveform to be [channels, frames], got {waveform.shape}")
 
         onset_env = librosa.onset.onset_strength(
             y=waveform.numpy(),
@@ -98,16 +97,16 @@ class TempoMatch:
             aggregate=np.median,
         )
 
-        # Unused return value is the beat event locations array
-        tempo, _ = librosa.beat.beat_track(
+        tempo, _= librosa.beat.beat_track(
             onset_envelope=onset_env,
             sr=sample_rate,
             tightness=110,
             sparse=False,
             trim=True,
-        )
+        ) # [[channel 1 tempo], [channel 2 tempo], ...], _
 
-        return max(tempo[0][0], 1.0)
+        mean_tempo = np.mean(tempo.flatten())
+        return max(mean_tempo, 1.0)
 
     def main(
         self,
