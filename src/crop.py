@@ -63,9 +63,10 @@ class AudioCrop:
         if end_frame < 0:
             end_frame = 0
 
-        assert (
-            start_frame < end_frame
-        ), "AudioCrop: Start time must be less than end time and be within the audio length."
+        if start_frame > end_frame:
+            raise ValueError(
+                "AudioCrop: Start time must be less than end time and be within the audio length."
+            )
 
         return (
             {

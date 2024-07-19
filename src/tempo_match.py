@@ -38,47 +38,49 @@ class TempoMatch:
             fft_size (int): Size of the FFT to be used (power of 2)
             hop_size (int): Hop length for overlap (e.g., fft_size // 4)
             win_length (int): Window size (often equal to fft_size)
+
+        Returns:
+            torch.Tensor: Time-domain output of same shape/type as input [channels, frames]
+            
         """
         if hop_size is None:
             hop_size = fft_size // 4
         if win_length is None:
             win_length = fft_size
 
-        with torch.no_grad():
-            window = torch.hann_window(
-                win_length, device=waveform.device
-            )  # shape: [win_length]
+        window = torch.hann_window(
+            win_length, device=waveform.device
+        )  # shape: [win_length]
 
-            stft = torch.stft(
+        with torch.no_grad():
+            complex_spectogram = torch.stft(
                 waveform,
                 n_fft=fft_size,
                 hop_length=hop_size,
                 win_length=win_length,
                 window=window,
-                return_complex=True,  # Need complex STFT for phase vocoder
-            )  # shape: [channels, freq, time] (complex valued spectrogram) dtype: `torch.cfloat``
+                return_complex=True,
+            )  # shape: [channels, freq, time]
 
-            assert (
-                stft.dtype == torch.cfloat
-            ), f"Expected complex STFT, got dtype {stft.dtype}"
-
-            phase_advance = torch.linspace(0, math.pi * hop_size, stft.shape[1])[
+            if complex_spectogram.dtype != torch.cfloat:
+                raise TypeError(f"Expected complex-valued STFT for phase vocoder, got dtype {complex_spectogram.dtype}")
+            
+            phase_advance = torch.linspace(0, math.pi * hop_size, complex_spectogram.shape[1])[
                 ..., None
             ]  #  shape: [freq, 1]
 
-            stretched_stft = F.phase_vocoder(
-                stft, rate, phase_advance
+            stretched_spectogram = F.phase_vocoder(
+                complex_spectogram, rate, phase_advance
             )  # shape: [channels, freq, stretched_time]
 
-            # New time should be (time in complex spectogram / rate)
-            expected_time = math.ceil(stft.shape[2] / rate)
+            expected_time = math.ceil(complex_spectogram.shape[2] / rate)
             assert (
-                abs(stretched_stft.shape[2] - expected_time) < 3
-            ), f"Expected Time: {expected_time}, Stretched Time: {stretched_stft.shape[2]}"
+                abs(stretched_spectogram.shape[2] - expected_time) < 3
+            ), f"Expected Time: {expected_time}, Stretched Time: {stretched_spectogram.shape[2]}"
 
-            # Use Inverse STFT to convert back to time domain
+            # Convert back to time basis with inverse STFT
             return torch.istft(
-                stretched_stft,
+                stretched_spectogram,
                 n_fft=fft_size,
                 hop_length=hop_size,
                 win_length=win_length,

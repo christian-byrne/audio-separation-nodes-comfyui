@@ -64,7 +64,7 @@ class AudioVideoCombine:
         sample_rate: int = audio["sample_rate"]
         input_path = Path(video_path)
         if not input_path.exists():
-            raise FileNotFoundError(f"Video file not found: {video_path}")
+            raise FileNotFoundError(f"AudioVideoCombine: Video file not found: {video_path}")
 
         # Assume that no ":" in input means that the user is trying to specify seconds
         if ":" not in video_start_time:
@@ -79,9 +79,10 @@ class AudioVideoCombine:
             video_end_time.split(":")[1]
         )
 
-        assert (
-            start_seconds_time < end_seconds_time
-        ), "AudioVideoCombine: Start time must be less than end time. Start time cannot be after video ends."
+        if start_seconds_time > end_seconds_time:
+            raise ValueError(
+                "AudioVideoCombine: Start time must be less than end time. Start time cannot be after video ends."
+            )
 
         output_dir = Path(folder_paths.get_output_directory())
         filename = input_path.stem

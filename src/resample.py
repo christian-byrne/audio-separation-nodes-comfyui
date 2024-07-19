@@ -22,8 +22,8 @@ class ChunkResampler:
         new_freq: Union[int, float],
         chunk_size_seconds: int = 2,
     ):
-        assert orig_freq > 0
-        assert new_freq > 0
+        if orig_freq < 0 or new_freq < 0:
+            raise ValueError("Frequencies must be positive.")
 
         self.UPPER_CLAMP = 1.1832
         self.LOWER_CLAMP = 0.945
