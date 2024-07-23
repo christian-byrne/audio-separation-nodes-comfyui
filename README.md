@@ -14,6 +14,10 @@ https://github.com/user-attachments/assets/c5cf20de-a17f-438d-81ac-0c392af669cf
 
 <summary> &nbsp; Show </summary>
 
+> [!NOTE] 
+> 
+> In order to load videos into the LoadAudio Node, change [this line](https://github.com/comfyanonymous/ComfyUI/blob/faa57430b0ff882275b1afcf6610e8e9f8a5929b/comfy_extras/nodes_audio.py#L185) in your Comfy install to include the video's extension (e.g., `.mp4`)
+
 [workflow.json](./wiki/workflows/isolate-vocals-video.json)
 
 https://github.com/user-attachments/assets/c5af418e-7137-4c36-b86e-3352cf558ea8
@@ -32,9 +36,12 @@ https://github.com/user-attachments/assets/c5af418e-7137-4c36-b86e-3352cf558ea8
   
 <summary> &nbsp; Show </summary>
 
-*For example, to replace copyrighted BGM with new music that has the same mood*.
 
-*NOTE*: In order to load videos into the LoadAudio Node, change [this line](https://github.com/comfyanonymous/ComfyUI/blob/faa57430b0ff882275b1afcf6610e8e9f8a5929b/comfy_extras/nodes_audio.py#L185) in your comfy install to include the `.ext` (e.g., `.mp4`)
+> [!NOTE] 
+> 
+> In order to load videos into the LoadAudio Node, change [this line](https://github.com/comfyanonymous/ComfyUI/blob/faa57430b0ff882275b1afcf6610e8e9f8a5929b/comfy_extras/nodes_audio.py#L185) in your Comfy install to include the video's extension (e.g., `.mp4`)
+
+You can use this to replace copyrighted BGM in a video with new BGM. You can set the denoise low, so that the new BGM is still stimilar to the original.
 
 [workflow json](./wiki/workflows/replace-bgm.json)
 
