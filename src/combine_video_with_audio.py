@@ -19,19 +19,27 @@ class AudioVideoCombine:
         return {
             "required": {
                 "audio": ("AUDIO",),
-                "video_path": ("STRING", {"default": "/path/to/video.mp4"}),
+                "video_path": (
+                    "STRING",
+                    {
+                        "default": "/path/to/video.mp4",
+                        "tooltip": "The absolute file path to the video file to which the audio will be added.",
+                    },
+                ),
             },
             "optional": {
                 "video_start_time": (
                     "STRING",
                     {
                         "default": "0:00",
+                        "tooltip": "The video will be trimmed to start at this time. The format is MM:SS.",
                     },
                 ),
                 "video_end_time": (
                     "STRING",
                     {
                         "default": "1:00",
+                        "tooltip": "The video will be trimmed to end at this time. The format is MM:SS.",
                     },
                 ),
                 "auto_open": (
@@ -40,6 +48,7 @@ class AudioVideoCombine:
                         "default": False,
                         "label_on": "Auto open after combining",
                         "description": "Don't auto open after combining",
+                        "tooltip": "Whether to automatically open the combined video with the default video player after processing.",
                     },
                 ),
             },
@@ -50,6 +59,8 @@ class AudioVideoCombine:
     RETURN_NAMES = ("saved_video_path",)
     CATEGORY = "audio"
     OUTPUT_NODE = True
+    OUTPUT_TOOLTIPS = ("The path to the output video.",)
+    DESCRIPTION = "Replace the audio of a video with a new audio track."
 
     def main(
         self,
@@ -64,7 +75,9 @@ class AudioVideoCombine:
         sample_rate: int = audio["sample_rate"]
         input_path = Path(video_path)
         if not input_path.exists():
-            raise FileNotFoundError(f"AudioVideoCombine: Video file not found: {video_path}")
+            raise FileNotFoundError(
+                f"AudioVideoCombine: Video file not found: {video_path}"
+            )
 
         # Assume that no ":" in input means that the user is trying to specify seconds
         if ":" not in video_start_time:

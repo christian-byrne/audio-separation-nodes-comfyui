@@ -25,10 +25,25 @@ class AudioSeparation:
                         "logarithmic",
                         "exponential",
                     ],
-                    {"default": "linear"},
+                    {
+                        "default": "linear",
+                        "tooltip": "Audio is split into segments (chunks) with overlapping areas to ensure smooth transitions. This setting controls the fade effect at these overlaps. Choose Linear for even fading, Half-Sine for a smooth curve, Logarithmic for a quick fade out and slow fade in, or Exponential for a slow fade out and quick fade in.",
+                    },
                 ),
-                "chunk_length": ("FLOAT", {"default": 10.0}),
-                "chunk_overlap": ("FLOAT", {"default": 0.1}),
+                "chunk_length": (
+                    "FLOAT",
+                    {
+                        "default": 10.0,
+                        "tooltip": "The length of each segment (chunk) in seconds. Longer chunks may require more memory and MIGHT produce better results.",
+                    },
+                ),
+                "chunk_overlap": (
+                    "FLOAT",
+                    {
+                        "default": 0.1,
+                        "tooltip": "The overlap between each segment (chunk) in seconds. A higher overlap may be necessary if chunks are too short or the audio changes rapidly.",
+                    },
+                ),
             },
         }
 
@@ -36,6 +51,7 @@ class AudioSeparation:
     RETURN_TYPES = ("AUDIO", "AUDIO", "AUDIO", "AUDIO")
     RETURN_NAMES = ("Bass", "Drums", "Other", "Vocals")
     CATEGORY = "audio"
+    DESCRIPTION = "Separate audio into four sources: bass, drums, other, and vocals."
 
     def main(
         self,

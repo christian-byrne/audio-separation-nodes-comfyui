@@ -17,6 +17,7 @@ class GetTempo:
     RETURN_TYPES = ("STRING", "FLOAT", "INTEGER")
     RETURN_NAMES = ("tempo_string", "tempo_float", "tempo_integer")
     CATEGORY = "audio"
+    DESCRIPTION = "Get the tempo (BPM) of audio using onset detection."
 
     def main(
         self,
