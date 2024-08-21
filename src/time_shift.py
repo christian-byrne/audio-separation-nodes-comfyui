@@ -17,6 +17,7 @@ class TimeShift:
     FUNCTION = "main"
     RETURN_TYPES = ("AUDIO",)
     CATEGORY = "audio"
+    DESCRIPTION = "Time-stretch or time-compress audio by a given rate. A rate of 2.0 will double the speed of the audio, while a rate of 0.5 will halve the speed."
 
     def main(
         self,

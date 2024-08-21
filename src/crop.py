@@ -28,6 +28,7 @@ class AudioCrop:
     FUNCTION = "main"
     RETURN_TYPES = ("AUDIO",)
     CATEGORY = "audio"
+    DESCRIPTION = "Crop (trim) audio to a specific start and end time."
 
     def main(
         self,

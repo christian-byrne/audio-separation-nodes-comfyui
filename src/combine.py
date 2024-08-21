@@ -18,7 +18,10 @@ class AudioCombine:
             "optional": {
                 "method": (
                     ["add", "mean", "subtract", "multiply", "divide"],
-                    {"default": "add"},
+                    {
+                        "default": "add",
+                        "tooltip": "The method used to combine the audio waveforms.",
+                    },
                 )
             },
         }
@@ -26,6 +29,7 @@ class AudioCombine:
     FUNCTION = "main"
     RETURN_TYPES = ("AUDIO",)
     CATEGORY = "audio"
+    DESCRIPTION = "Combine two audio tracks by overlaying their waveforms."
 
     def main(
         self,

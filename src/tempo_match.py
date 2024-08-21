@@ -17,6 +17,7 @@ class TempoMatch:
     FUNCTION = "main"
     RETURN_TYPES = ("AUDIO", "AUDIO")
     CATEGORY = "audio"
+    DESCRIPTION = "Match the tempo of two audio tracks by time-stretching them both to match the average tempo between them. E.g., if one audio track is 120 BPM and the other is 100 BPM, both will be time-stretched to 110 BPM."
 
     def main(
         self,
