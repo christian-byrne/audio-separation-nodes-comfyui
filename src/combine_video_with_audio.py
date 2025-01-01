@@ -5,7 +5,7 @@ from pathlib import Path
 
 import torch
 import torchaudio
-from moviepy.editor import VideoFileClip, AudioFileClip
+from moviepy import *
 
 from typing import Tuple
 from ._types import AUDIO
