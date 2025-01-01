@@ -104,6 +104,7 @@ moviepy
 
 # Installation
 
+1. If you run ComfyUI inside of a virtual environment, make sure it is activated
 1. `git clone` this repository in `ComfyUI/custom_nodes` folder
 2. `cd` into the cloned repository
 3. `pip install -r requirements.txt`
