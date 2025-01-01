@@ -5,7 +5,14 @@ from pathlib import Path
 
 import torch
 import torchaudio
-from moviepy import *
+
+try:
+    # moviepy<=1.0.3
+    from moviepy.editor import VideoFileClip, AudioFileClip
+except ImportError:
+    # moviepy>=2.0.0 (Nov. 2024)
+    from moviepy import VideoFileClip, AudioFileClip
+
 
 from typing import Tuple
 from ._types import AUDIO
@@ -110,9 +117,17 @@ class AudioVideoCombine:
         with tempfile.NamedTemporaryFile(suffix=".wav") as f:
             torchaudio.save(f.name, waveform.squeeze(0), sample_rate=sample_rate)
             video = VideoFileClip(str(video_path), audio=False)
-            video = video.subclip(start_seconds_time, end_seconds_time)
             audio = AudioFileClip(f.name)
-            video = video.set_audio(audio)
+
+            try:
+                # moviepy<=1.0.3
+                video = video.subclip(start_seconds_time, end_seconds_time)
+                video = video.set_audio(audio)
+            except AttributeError:
+                # moviepy>=2.0.0 (Nov. 2024)
+                video = video.subclipped(start_seconds_time, end_seconds_time)
+                video = video.with_audio(audio)
+
             video.write_videofile(new_filepath, codec="libx264", audio_codec="aac")
 
         new_filepath = os.path.normpath(new_filepath)
