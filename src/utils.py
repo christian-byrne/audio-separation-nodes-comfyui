@@ -97,3 +97,35 @@ def estimate_tempo(waveform: torch.Tensor, sample_rate: int) -> float:
 
     mean_tempo = np.mean(tempo.flatten())
     return max(mean_tempo, 1.0)
+
+
+def ensure_stereo(audio: torch.Tensor) -> torch.Tensor:
+    """
+    Ensures the input audio is stereo. Supports [channels, frames] and [batch, channels, frames].
+    Handles mono by duplicating channels and multi-channel by downmixing to stereo.
+
+    Args:
+        audio (torch.Tensor): Audio data with shape [channels, frames] or [batch, channels, frames].
+
+    Returns:
+        torch.Tensor: Stereo audio with the same dimensional format as the input.
+    """
+    if audio.ndim not in (2, 3):
+        raise ValueError(
+            "Audio input must have 2 or 3 dimensions: [channels, frames] or [batch, channels, frames]."
+        )
+
+    is_batched = audio.ndim == 3
+    channels_dim = 1 if is_batched else 0
+
+    # Already stereo
+    if audio.shape[channels_dim] == 2:
+        return audio
+
+    # Mono audio
+    elif audio.shape[channels_dim] == 1:
+        return audio.repeat(1, 2, 1) if is_batched else audio.repeat(2, 1)
+
+    # Multi-channel audio
+    audio = audio.narrow(channels_dim, 0, 2).mean(dim=channels_dim, keepdim=True)
+    return audio.repeat(1, 2, 1) if is_batched else audio.repeat(2, 1)

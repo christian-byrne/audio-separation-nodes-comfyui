@@ -8,6 +8,7 @@ import comfy.model_management
 
 from typing import Dict, Tuple
 from ._types import AUDIO
+from .utils import ensure_stereo
 
 
 class AudioSeparation:
@@ -69,6 +70,8 @@ class AudioSeparation:
         bundle = HDEMUCS_HIGH_MUSDB_PLUS
         model: torch.nn.Module = bundle.get_model().to(device)
         self.model_sample_rate = bundle.sample_rate
+
+        waveform = ensure_stereo(waveform)
 
         # Resample to model's expected sample rate
         if self.input_sample_rate_ != self.model_sample_rate:
