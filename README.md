@@ -14,7 +14,7 @@ https://github.com/user-attachments/assets/c5cf20de-a17f-438d-81ac-0c392af669cf
 >
 > In order to load videos into the LoadAudio Node, change [this line](https://github.com/comfyanonymous/ComfyUI/blob/faa57430b0ff882275b1afcf6610e8e9f8a5929b/comfy_extras/nodes_audio.py#L185) in your Comfy install to include the video's extension (e.g., `.mp4`)
 
-[workflow.json](./example_workflows/isolate-vocals-video.json)
+[workflow.json](./example_workflows/Isolate%20Vocals%20from%20Video.json)
 
 https://github.com/user-attachments/assets/c5af418e-7137-4c36-b86e-3352cf558ea8
 
@@ -32,7 +32,7 @@ https://github.com/user-attachments/assets/c5af418e-7137-4c36-b86e-3352cf558ea8
 
 You can use this to replace copyrighted BGM in a video with new BGM. You can set the denoise low, so that the new BGM is still stimilar to the original.
 
-[workflow json](./example_workflows/replace-bgm.json)
+[workflow json](./example_workflows/Replace%20BGM%20with%20Stable-Audio-Generated%20Music.json)
 
 https://github.com/user-attachments/assets/a7d5656b-5f8b-439a-936f-6ebb6a0d538a
 
@@ -44,7 +44,7 @@ https://github.com/user-attachments/assets/a7d5656b-5f8b-439a-936f-6ebb6a0d538a
 
 <summary> &nbsp; Show </summary>
 
-- [workflow json](./example_workflows/remix-songs.json)
+- [workflow json](./example_workflows/Remix%20Song.json)
 - [example output (audio file) with embedded workflow](https://github.com/christian-byrne/audio-separation-nodes-comfyui/raw/refs/heads/demo-files/wiki/examples/ComfyUI_temp_iaepj_00001_.flac)
 - [example output (audio file) with embedded workflow](https://github.com/christian-byrne/audio-separation-nodes-comfyui/raw/refs/heads/demo-files/wiki/examples/ComfyUI_00002_.flac)
 
@@ -56,7 +56,7 @@ https://github.com/user-attachments/assets/a7d5656b-5f8b-439a-936f-6ebb6a0d538a
 
 <summary> &nbsp; Show </summary>
 
-[workflow.json](./example_workflows/isolate-vocals-song.json)
+[workflow.json](./example_workflows/Isolate%20Vocals%20from%20Audio.json)
 
 https://github.com/user-attachments/assets/c5cf20de-a17f-438d-81ac-0c392af669cf
 
@@ -68,7 +68,7 @@ https://github.com/user-attachments/assets/c5cf20de-a17f-438d-81ac-0c392af669cf
 
 <summary> &nbsp; Show </summary>
 
-- [workflow json](./example_workflows/extract-instrumental.json)
+- [workflow json](./example_workflows/Extract%20Instrumental%20from%20Song.json)
 
 </details>
 
