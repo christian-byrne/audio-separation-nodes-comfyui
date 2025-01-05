@@ -1,0 +1,1246 @@
+{
+  "last_node_id": 94,
+  "last_link_id": 173,
+  "nodes": [
+    {
+      "id": 7,
+      "type": "CLIPTextEncode",
+      "pos": [
+        606.5174630170885,
+        416.9215694855039
+      ],
+      "size": {
+        "0": 417.080078125,
+        "1": 122.07127380371094
+      },
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 26
+        }
+      ],
+      "outputs": [
+        {
+          "name": "CONDITIONING",
+          "type": "CONDITIONING",
+          "links": [
+            6
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CLIPTextEncode"
+      },
+      "widgets_values": [
+        "distorted, low quality"
+      ],
+      "color": "#322",
+      "bgcolor": "#533"
+    },
+    {
+      "id": 57,
+      "type": "PreviewAudio",
+      "pos": [
+        2974.753588262695,
+        1153.3026287800308
+      ],
+      "size": {
+        "0": 357.0879211425781,
+        "1": 116.27761840820312
+      },
+      "flags": {},
+      "order": 23,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "audio",
+          "type": "AUDIO",
+          "link": 112
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "PreviewAudio"
+      },
+      "widgets_values": [
+        null
+      ]
+    },
+    {
+      "id": 3,
+      "type": "KSampler",
+      "pos": [
+        1096.5174630170895,
+        246.92156948550402
+      ],
+      "size": {
+        "0": 315,
+        "1": 262
+      },
+      "flags": {},
+      "order": 17,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 18
+        },
+        {
+          "name": "positive",
+          "type": "CONDITIONING",
+          "link": 4
+        },
+        {
+          "name": "negative",
+          "type": "CONDITIONING",
+          "link": 6
+        },
+        {
+          "name": "latent_image",
+          "type": "LATENT",
+          "link": 68,
+          "slot_index": 3
+        }
+      ],
+      "outputs": [
+        {
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": [
+            13
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "KSampler"
+      },
+      "widgets_values": [
+        973858906308462,
+        "randomize",
+        25,
+        4.5,
+        "dpmpp_3m_sde_gpu",
+        "exponential",
+        0.98
+      ]
+    },
+    {
+      "id": 41,
+      "type": "Note",
+      "pos": [
+        146.51746301708997,
+        146.9215694855043
+      ],
+      "size": {
+        "0": 439.3000183105469,
+        "1": 395.3994445800781
+      },
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "properties": {
+        "text": ""
+      },
+      "widgets_values": [
+        "Stable Audio Prompt Library (these prompts work well, they are from StableAudio website)\n\n\nTrance\n\nTrance, Ibiza, Beach, Sun, 4 AM, Progressive, Synthesizer, 909, Dramatic Chords, Choir, Euphoric, Nostalgic, Dynamic, Flowing\n\nUpbeat\n\n3/4, in 3, 3 beat, guitar, drums, bright, happy, claps\n\nSynthpop\n\nSynthpop, Big Reverbed Synthesizer Pad Chords, Driving Gated Drum Machine, Atmospheric, Moody, Nostalgic, Cool, Club, Striped-back, Pop Instrumental, 100 BPM\n\nEpic Rock\n\nPost-Rock, Guitars, Drum Kit, Bass, Strings, Euphoric, Up-Lifting, Moody, Flowing, Raw, Epic, Sentimental, 125 BPM\n\n\nAmbient\n\nAmbient Techno, meditation, Scandinavian Forest, 808 drum machine, 808 kick, claps, shaker, synthesizer, synth bass, Synth Drones, beautiful, peaceful, Ethereal, Natural, 122 BPM, Instrumental\n\n\nPop\n\nPop, Pop-Electronic, Ballad, Billboard, Drum Machine, Bass, Lush Synthesizer Pads, Synthesizer Arp, Synth Bass, Vocal Sample Chops, Percussion, Honest, Heart-Felt, Melancholic, Vibe, Cool, Modern, Atmospheric, 115 BPM\n\n\nChillhop\n\nLofi hip hop beat, chillhop\n\nTechno\n\nTechno, Berlin Techno, Rave, Tresnor, Drum Machine, Thumping Kick, Rumble Kick, Synthesizer Arp, Modular Synthesis, Reverbed Percussion Hits, Percussion, Dark, Moody, Serious, Vibe, Hypnotic, Evolving, 135 BPM\n\nDisco\n\nDisco, Driving Drum Machine, Synthesizer, Bass, Piano, Guitars, Instrumental, Clubby, Euphoric, Chicago, New York, 115 BPM\n\nModern\n\nAmbient house, new age, meditation, advertisement, 808 drum machine, 808 kick, claps, shaker, synthesizer, synth bass, soaring lead heavily reverbed, modern, sleek, beautiful, inspiring, futuristic\n\nCalmn\n\nCalm meditation music to play in a spa lobby\n\nHouse\n\nHouse, Ibiza, Drum Machine, Synthesizer, Percussion, Synth Bass, Synthesizer Arp, Clubby, Dancy, Euphoric, Feel-Good, Vibey, Cool, Clean, 125 BPM\n\nClassic Rock\n\nClassic Rock, Drum Kit, Electric Guitar, Bass, Raw, Uplifting, Anthem, Moody, Melancholic, Melodic, 130 BPM\n\nTrip Hop\n\nTrip Hop, Cinematic, soundtrack, Bristol, Drum Kit, Bass, Rhodes, Choir, Cool, Moody, Melancholic, Atmospheric, Dreamy, groovy, introspective, thoughtful, beautiful, 85 BPM\n\nNew Age\n\nNew-Age Electronic, Synthesizer, Choir, Bass, Ambient, Atmospheric, Peaceful, Meditative, Relaxing, Laid-Back, 50 BPM\n\nPop\n\nPop, Pop-Electronic, Ballad, Billboard, Drum Machine, Bass, Lush Synthesizer Pads, Synthesizer Arp, Synth Bass, Vocal Sample Chops, Percussion, Honest, Heart-Felt, Melancholic, Vibe, Cool, Modern, Atmospheric, 115 BPM\n\n\n"
+      ],
+      "color": "#222",
+      "bgcolor": "#000"
+    },
+    {
+      "id": 4,
+      "type": "CheckpointLoaderSimple",
+      "pos": [
+        -303.4825369829104,
+        386.9215694855039
+      ],
+      "size": {
+        "0": 357.7110900878906,
+        "1": 98.69783020019531
+      },
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "MODEL",
+          "type": "MODEL",
+          "links": [
+            18
+          ],
+          "slot_index": 0
+        },
+        {
+          "name": "CLIP",
+          "type": "CLIP",
+          "links": [],
+          "slot_index": 1
+        },
+        {
+          "name": "VAE",
+          "type": "VAE",
+          "links": [
+            14,
+            28
+          ],
+          "slot_index": 2
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CheckpointLoaderSimple"
+      },
+      "widgets_values": [
+        "stable_audio_open_1.0.safetensors"
+      ]
+    },
+    {
+      "id": 6,
+      "type": "CLIPTextEncode",
+      "pos": [
+        606.5174630170885,
+        236.92156948550405
+      ],
+      "size": {
+        "0": 420.080078125,
+        "1": 122.67131042480469
+      },
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 25
+        }
+      ],
+      "outputs": [
+        {
+          "name": "CONDITIONING",
+          "type": "CONDITIONING",
+          "links": [
+            4
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CLIPTextEncode"
+      },
+      "widgets_values": [
+        "New-Age Electronic, Synthesizer, Choir, Bass, Ambient, Atmospheric, Peaceful, Meditative, Relaxing, Laid-Back, 50 BPM\n"
+      ],
+      "color": "#232",
+      "bgcolor": "#353"
+    },
+    {
+      "id": 20,
+      "type": "LoadAudio",
+      "pos": [
+        -495.5700338942366,
+        1805.3184771760143
+      ],
+      "size": {
+        "0": 498.1937561035156,
+        "1": 164.7704315185547
+      },
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "AUDIO",
+          "type": "AUDIO",
+          "links": [
+            69
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LoadAudio"
+      },
+      "widgets_values": [
+        "westworld.webm",
+        null,
+        ""
+      ]
+    },
+    {
+      "id": 68,
+      "type": "AudioCombine",
+      "pos": [
+        2264.753588262695,
+        1153.3026287800308
+      ],
+      "size": {
+        "0": 315,
+        "1": 78
+      },
+      "flags": {},
+      "order": 19,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "audio_1",
+          "type": "AUDIO",
+          "link": 153
+        },
+        {
+          "name": "audio_2",
+          "type": "AUDIO",
+          "link": 162
+        }
+      ],
+      "outputs": [
+        {
+          "name": "AUDIO",
+          "type": "AUDIO",
+          "links": [
+            147,
+            155
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "AudioCombine"
+      },
+      "widgets_values": [
+        "add"
+      ]
+    },
+    {
+      "id": 35,
+      "type": "AudioSeparation",
+      "pos": [
+        474.1852589524428,
+        1799.4936311310917
+      ],
+      "size": {
+        "0": 315,
+        "1": 166
+      },
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "audio",
+          "type": "AUDIO",
+          "link": 70
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Bass",
+          "type": "AUDIO",
+          "links": [
+            58,
+            162,
+            166
+          ],
+          "shape": 3,
+          "slot_index": 0
+        },
+        {
+          "name": "Drums",
+          "type": "AUDIO",
+          "links": [
+            164,
+            167
+          ],
+          "shape": 3,
+          "slot_index": 1
+        },
+        {
+          "name": "Other",
+          "type": "AUDIO",
+          "links": [
+            165,
+            168
+          ],
+          "shape": 3,
+          "slot_index": 2
+        },
+        {
+          "name": "Vocals",
+          "type": "AUDIO",
+          "links": [
+            61,
+            156
+          ],
+          "shape": 3,
+          "slot_index": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "AudioSeparation"
+      },
+      "widgets_values": [
+        "linear",
+        20,
+        0.1
+      ],
+      "color": "#233",
+      "bgcolor": "#355"
+    },
+    {
+      "id": 89,
+      "type": "AudioCombine",
+      "pos": [
+        717.0453763801272,
+        1219.5315789311524
+      ],
+      "size": {
+        "0": 315,
+        "1": 78
+      },
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "audio_1",
+          "type": "AUDIO",
+          "link": 166
+        },
+        {
+          "name": "audio_2",
+          "type": "AUDIO",
+          "link": 167
+        }
+      ],
+      "outputs": [
+        {
+          "name": "AUDIO",
+          "type": "AUDIO",
+          "links": [
+            169
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "AudioCombine"
+      },
+      "widgets_values": [
+        "add"
+      ]
+    },
+    {
+      "id": 88,
+      "type": "PreviewAudio",
+      "pos": [
+        1427.6807945922972,
+        2065.7185909772816
+      ],
+      "size": {
+        "0": 343.0451965332031,
+        "1": 78.96603393554688
+      },
+      "flags": {},
+      "order": 12,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "audio",
+          "type": "AUDIO",
+          "link": 165
+        }
+      ],
+      "title": "Isolated Other",
+      "properties": {
+        "Node name for S&R": "PreviewAudio"
+      },
+      "widgets_values": [
+        null
+      ]
+    },
+    {
+      "id": 87,
+      "type": "PreviewAudio",
+      "pos": [
+        1427.7700527710085,
+        1923.4593848005256
+      ],
+      "size": {
+        "0": 343.0451965332031,
+        "1": 78.96603393554688
+      },
+      "flags": {},
+      "order": 10,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "audio",
+          "type": "AUDIO",
+          "link": 164
+        }
+      ],
+      "title": "Isolated Drums",
+      "properties": {
+        "Node name for S&R": "PreviewAudio"
+      },
+      "widgets_values": [
+        null
+      ]
+    },
+    {
+      "id": 27,
+      "type": "PreviewAudio",
+      "pos": [
+        1039.6807945922967,
+        1916.7185909772834
+      ],
+      "size": {
+        "0": 337.02545166015625,
+        "1": 79.1675033569336
+      },
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "audio",
+          "type": "AUDIO",
+          "link": 58
+        }
+      ],
+      "title": "Isolated Bass",
+      "properties": {
+        "Node name for S&R": "PreviewAudio"
+      },
+      "widgets_values": [
+        null
+      ]
+    },
+    {
+      "id": 30,
+      "type": "PreviewAudio",
+      "pos": [
+        1028.6807945922965,
+        2064.7185909772816
+      ],
+      "size": {
+        "0": 343.0451965332031,
+        "1": 78.96603393554688
+      },
+      "flags": {},
+      "order": 13,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "audio",
+          "type": "AUDIO",
+          "link": 61
+        }
+      ],
+      "title": "Isolated Vocals",
+      "properties": {
+        "Node name for S&R": "PreviewAudio"
+      },
+      "widgets_values": [
+        null
+      ]
+    },
+    {
+      "id": 90,
+      "type": "AudioCombine",
+      "pos": [
+        717.0453763801272,
+        1049.5315789311524
+      ],
+      "size": {
+        "0": 315,
+        "1": 78
+      },
+      "flags": {},
+      "order": 14,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "audio_1",
+          "type": "AUDIO",
+          "link": 168
+        },
+        {
+          "name": "audio_2",
+          "type": "AUDIO",
+          "link": 169
+        }
+      ],
+      "outputs": [
+        {
+          "name": "AUDIO",
+          "type": "AUDIO",
+          "links": [
+            170,
+            171
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "AudioCombine"
+      },
+      "widgets_values": [
+        "add"
+      ]
+    },
+    {
+      "id": 19,
+      "type": "VAEEncodeAudio",
+      "pos": [
+        791.8950567304682,
+        629.5174619346927
+      ],
+      "size": {
+        "0": 210,
+        "1": 46
+      },
+      "flags": {},
+      "order": 16,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "audio",
+          "type": "AUDIO",
+          "link": 171
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 28
+        }
+      ],
+      "outputs": [
+        {
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": [
+            68
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "VAEEncodeAudio"
+      }
+    },
+    {
+      "id": 92,
+      "type": "Note",
+      "pos": [
+        86.70424642041016,
+        1676.3310729947511
+      ],
+      "size": {
+        "0": 303.4900207519531,
+        "1": 94.80523681640625
+      },
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "properties": {
+        "text": ""
+      },
+      "widgets_values": [
+        "Make sure to crop the video to the same length in the AudioVideoCombine Node"
+      ],
+      "color": "#432",
+      "bgcolor": "#653"
+    },
+    {
+      "id": 91,
+      "type": "PreviewAudio",
+      "pos": [
+        1097.045376380127,
+        1119.5315789311524
+      ],
+      "size": {
+        "0": 337.02545166015625,
+        "1": 79.1675033569336
+      },
+      "flags": {},
+      "order": 15,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "audio",
+          "type": "AUDIO",
+          "link": 170
+        }
+      ],
+      "title": "Everything But Vocals",
+      "properties": {
+        "Node name for S&R": "PreviewAudio"
+      },
+      "widgets_values": [
+        null
+      ]
+    },
+    {
+      "id": 75,
+      "type": "PreviewAudio",
+      "pos": [
+        2584.753588262695,
+        963.3026287800292
+      ],
+      "size": {
+        "0": 337.9790344238281,
+        "1": 124.55256652832031
+      },
+      "flags": {},
+      "order": 21,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "audio",
+          "type": "AUDIO",
+          "link": 147
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "PreviewAudio"
+      },
+      "widgets_values": [
+        null
+      ]
+    },
+    {
+      "id": 12,
+      "type": "VAEDecodeAudio",
+      "pos": [
+        1451.8950567304673,
+        252.51746193469236
+      ],
+      "size": {
+        "0": 210,
+        "1": 46
+      },
+      "flags": {},
+      "order": 18,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "samples",
+          "type": "LATENT",
+          "link": 13
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 14,
+          "slot_index": 1
+        }
+      ],
+      "outputs": [
+        {
+          "name": "AUDIO",
+          "type": "AUDIO",
+          "links": [
+            153,
+            172
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "VAEDecodeAudio"
+      }
+    },
+    {
+      "id": 93,
+      "type": "PreviewAudio",
+      "pos": [
+        1480.8950567304673,
+        415.5174619346922
+      ],
+      "size": {
+        "0": 344.9685974121094,
+        "1": 79.7200698852539
+      },
+      "flags": {},
+      "order": 20,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "audio",
+          "type": "AUDIO",
+          "link": 172
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "PreviewAudio"
+      },
+      "widgets_values": [
+        null
+      ]
+    },
+    {
+      "id": 10,
+      "type": "CLIPLoader",
+      "pos": [
+        -293.4825369829104,
+        246.92156948550402
+      ],
+      "size": {
+        "0": 335.6534118652344,
+        "1": 82
+      },
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "CLIP",
+          "type": "CLIP",
+          "links": [
+            25,
+            26
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CLIPLoader"
+      },
+      "widgets_values": [
+        "t5_base.safetensors",
+        "stable_audio"
+      ]
+    },
+    {
+      "id": 40,
+      "type": "AudioCrop",
+      "pos": [
+        78.42996610576392,
+        1837.3184771760143
+      ],
+      "size": {
+        "0": 315,
+        "1": 82
+      },
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "audio",
+          "type": "AUDIO",
+          "link": 69
+        }
+      ],
+      "outputs": [
+        {
+          "name": "AUDIO",
+          "type": "AUDIO",
+          "links": [
+            70
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "AudioCrop"
+      },
+      "widgets_values": [
+        "0",
+        "1:00"
+      ],
+      "color": "#332922",
+      "bgcolor": "#593930"
+    },
+    {
+      "id": 56,
+      "type": "AudioCombine",
+      "pos": [
+        2634.753588262695,
+        1353.3026287800308
+      ],
+      "size": {
+        "0": 315,
+        "1": 78
+      },
+      "flags": {},
+      "order": 22,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "audio_1",
+          "type": "AUDIO",
+          "link": 155
+        },
+        {
+          "name": "audio_2",
+          "type": "AUDIO",
+          "link": 156,
+          "slot_index": 1
+        }
+      ],
+      "outputs": [
+        {
+          "name": "AUDIO",
+          "type": "AUDIO",
+          "links": [
+            112,
+            173
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "AudioCombine"
+      },
+      "widgets_values": [
+        "add"
+      ]
+    },
+    {
+      "id": 94,
+      "type": "AudioVideoCombine",
+      "pos": [
+        3040,
+        1472
+      ],
+      "size": {
+        "0": 315,
+        "1": 130
+      },
+      "flags": {},
+      "order": 24,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "audio",
+          "type": "AUDIO",
+          "link": 173
+        }
+      ],
+      "outputs": [
+        {
+          "name": "saved_video_path",
+          "type": "STRING",
+          "links": null,
+          "shape": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "AudioVideoCombine"
+      },
+      "widgets_values": [
+        "/home/c_byrne/projects/comfy-testing-environment/ComfyUI/input/westworld.webm",
+        "0:00",
+        "1:00",
+        true
+      ]
+    }
+  ],
+  "links": [
+    [
+      4,
+      6,
+      0,
+      3,
+      1,
+      "CONDITIONING"
+    ],
+    [
+      6,
+      7,
+      0,
+      3,
+      2,
+      "CONDITIONING"
+    ],
+    [
+      13,
+      3,
+      0,
+      12,
+      0,
+      "LATENT"
+    ],
+    [
+      14,
+      4,
+      2,
+      12,
+      1,
+      "VAE"
+    ],
+    [
+      18,
+      4,
+      0,
+      3,
+      0,
+      "MODEL"
+    ],
+    [
+      25,
+      10,
+      0,
+      6,
+      0,
+      "CLIP"
+    ],
+    [
+      26,
+      10,
+      0,
+      7,
+      0,
+      "CLIP"
+    ],
+    [
+      28,
+      4,
+      2,
+      19,
+      1,
+      "VAE"
+    ],
+    [
+      58,
+      35,
+      0,
+      27,
+      0,
+      "AUDIO"
+    ],
+    [
+      61,
+      35,
+      3,
+      30,
+      0,
+      "AUDIO"
+    ],
+    [
+      68,
+      19,
+      0,
+      3,
+      3,
+      "LATENT"
+    ],
+    [
+      69,
+      20,
+      0,
+      40,
+      0,
+      "AUDIO"
+    ],
+    [
+      70,
+      40,
+      0,
+      35,
+      0,
+      "AUDIO"
+    ],
+    [
+      112,
+      56,
+      0,
+      57,
+      0,
+      "AUDIO"
+    ],
+    [
+      147,
+      68,
+      0,
+      75,
+      0,
+      "AUDIO"
+    ],
+    [
+      153,
+      12,
+      0,
+      68,
+      0,
+      "AUDIO"
+    ],
+    [
+      155,
+      68,
+      0,
+      56,
+      0,
+      "AUDIO"
+    ],
+    [
+      156,
+      35,
+      3,
+      56,
+      1,
+      "AUDIO"
+    ],
+    [
+      162,
+      35,
+      0,
+      68,
+      1,
+      "AUDIO"
+    ],
+    [
+      164,
+      35,
+      1,
+      87,
+      0,
+      "AUDIO"
+    ],
+    [
+      165,
+      35,
+      2,
+      88,
+      0,
+      "AUDIO"
+    ],
+    [
+      166,
+      35,
+      0,
+      89,
+      0,
+      "AUDIO"
+    ],
+    [
+      167,
+      35,
+      1,
+      89,
+      1,
+      "AUDIO"
+    ],
+    [
+      168,
+      35,
+      2,
+      90,
+      0,
+      "AUDIO"
+    ],
+    [
+      169,
+      89,
+      0,
+      90,
+      1,
+      "AUDIO"
+    ],
+    [
+      170,
+      90,
+      0,
+      91,
+      0,
+      "AUDIO"
+    ],
+    [
+      171,
+      90,
+      0,
+      19,
+      0,
+      "AUDIO"
+    ],
+    [
+      172,
+      12,
+      0,
+      93,
+      0,
+      "AUDIO"
+    ],
+    [
+      173,
+      56,
+      0,
+      94,
+      0,
+      "AUDIO"
+    ]
+  ],
+  "groups": [
+    {
+      "title": "Audio Stems Separation",
+      "bounding": [
+        -546,
+        1472,
+        2451,
+        717
+      ],
+      "color": "#3f789e",
+      "font_size": 24
+    },
+    {
+      "title": "Generate New BGM",
+      "bounding": [
+        -366,
+        18,
+        2283,
+        746
+      ],
+      "color": "#8AA",
+      "font_size": 24
+    },
+    {
+      "title": "Postprocess & Re-Combine",
+      "bounding": [
+        2056,
+        691,
+        1511,
+        1083
+      ],
+      "color": "#444",
+      "font_size": 24
+    },
+    {
+      "title": "Recombine All Except Vocals",
+      "bounding": [
+        542,
+        888,
+        1007,
+        498
+      ],
+      "color": "#444",
+      "font_size": 24
+    }
+  ],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 0.46650738020973354,
+      "offset": {
+        "0": 967.7999267578125,
+        "1": 480.5008850097656
+      }
+    }
+  },
+  "version": 0.4
+}
