@@ -2,6 +2,21 @@
 
 https://github.com/user-attachments/assets/c5cf20de-a17f-438d-81ac-0c392af669cf
 
+## New Nodes
+
+The following nodes are included to make building and managing audio lists easier:
+
+- AudioSplitEqual: Split a single `AUDIO` into N equal segments and output up to 8 separate `AUDIO` outputs. Useful for simple, fixed-fan-out splitting.
+- AudioSplitEqualList: Split a single `AUDIO` into N equal segments and return an `AUDIO_LIST`. Best for workflows that prefer list-driven processing.
+- AudioListGet: Retrieve an item from an `AUDIO_LIST` by index. Supports out-of-range modes: `error` (raise), `clamp` (to 0 or len-1), `wrap` (modulo length).
+- AudioStitch: Concatenate an `AUDIO_LIST` end-to-end into a single `AUDIO`. Optionally force stereo to avoid channel mismatches.
+- AudioNewList: Create a new `AUDIO_LIST` from multiple `AUDIO` inputs in the exact order connected. Includes an `inputcount` control and an “Update inputs” button to dynamically add/remove `audio_N` input sockets. `ignore_empty=True` skips unconnected sockets; set to `False` to enforce all inputs.
+
+Tips
+- After changing `inputcount` on AudioNewList, click “Update inputs” to apply the new number of inputs.
+- If you add or update this node package, restart ComfyUI and hard-refresh your browser to ensure the UI extension loads.
+
+
 # Examples
 
 #### _`Separating Voices in a Video`_
