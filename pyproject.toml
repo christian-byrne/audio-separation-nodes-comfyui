@@ -1,7 +1,7 @@
 [project]
 name = "audio-separation-nodes-comfyui"
 description = "Separate audio track into stems (vocals, bass, drums, other). Along with tools to recombine, tempo match, slice/crop audio"
-version = "1.4.0"
+version = "1.4.1"
 license = "LICENSE"
 dependencies = ["librosa==0.10.2", "numpy", "torchaudio>=2.3.0", "moviepy"]
 
