@@ -1,10 +1,38 @@
 import os
 import platform
+import subprocess
 import tempfile
 from pathlib import Path
 
 import torch
 import torchaudio
+
+
+def is_safe_path(path: str, strict: bool = False) -> bool:
+    """
+    Check if a path is within the current working directory.
+
+    When AUDIO_SEP_STRICT_PATHS is set, restricts file access to the current
+    working directory subtree to prevent path traversal attacks in multi-tenant
+    environments.
+
+    Args:
+        path: The file path to validate.
+        strict: If True, enforce path restrictions regardless of env var.
+
+    Returns:
+        True if the path is allowed, False otherwise.
+    """
+    if "AUDIO_SEP_STRICT_PATHS" not in os.environ and not strict:
+        return True
+    basedir = os.path.abspath(".")
+    try:
+        common_path = os.path.commonpath([basedir, os.path.abspath(path)])
+    except ValueError:
+        # Paths are on different drives (Windows)
+        return False
+    return common_path == basedir
+
 
 try:
     # moviepy<=1.0.3
@@ -81,6 +109,10 @@ class AudioVideoCombine:
         waveform: torch.Tensor = audio["waveform"]
         sample_rate: int = audio["sample_rate"]
         input_path = Path(video_path)
+        if not is_safe_path(video_path):
+            raise ValueError(
+                f"AudioVideoCombine: Path not allowed: {video_path}"
+            )
         if not input_path.exists():
             raise FileNotFoundError(
                 f"AudioVideoCombine: Video file not found: {video_path}"
@@ -131,12 +163,18 @@ class AudioVideoCombine:
             video.write_videofile(new_filepath, codec="libx264", audio_codec="aac")
 
         new_filepath = os.path.normpath(new_filepath)
-        if auto_open:
-            if platform.system() == "Darwin":
-                os.system(f'open "{new_filepath}"')
-            elif platform.system() == "Windows":
-                os.system(f'start "{new_filepath}"')
-            else:
-                os.system(f'xdg-open "{new_filepath}"')
+        auto_open_disabled = os.environ.get(
+            "AUDIO_SEP_DISABLE_AUTO_OPEN", ""
+        ).lower() in ("1", "true", "yes")
+        if auto_open and not auto_open_disabled:
+            try:
+                if platform.system() == "Darwin":
+                    subprocess.run(["open", new_filepath])
+                elif platform.system() == "Windows":
+                    subprocess.run(["cmd", "/c", "start", "", new_filepath])
+                else:
+                    subprocess.run(["xdg-open", new_filepath])
+            except Exception:
+                pass
 
         return (str(new_filepath),)
