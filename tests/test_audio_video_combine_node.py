@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+import importlib
 import sys
 import types
 
@@ -52,7 +53,7 @@ moviepy_module.AudioFileClip = object
 sys.modules.setdefault("moviepy", moviepy_module)
 sys.modules.setdefault("moviepy.editor", editor_module)
 
-from src import combine_video_with_audio as module  # ruff: noqa: E402
+module = importlib.import_module("src.combine_video_with_audio")
 
 
 class StubVideo:

@@ -50,18 +50,16 @@ def time_shift(
 
         phase_advance = torch.linspace(
             0, math.pi * hop_size, complex_spectogram.shape[1]
-        )[
-            ..., None
-        ]  #  shape: [freq, 1]
+        )[..., None]  #  shape: [freq, 1]
 
         stretched_spectogram = F.phase_vocoder(
             complex_spectogram, rate, phase_advance
         )  # shape: [channels, freq, stretched_time]
 
         expected_time = math.ceil(complex_spectogram.shape[2] / rate)
-        assert (
-            abs(stretched_spectogram.shape[2] - expected_time) < 3
-        ), f"Expected Time: {expected_time}, Stretched Time: {stretched_spectogram.shape[2]}"
+        assert abs(stretched_spectogram.shape[2] - expected_time) < 3, (
+            f"Expected Time: {expected_time}, Stretched Time: {stretched_spectogram.shape[2]}"
+        )
 
         # Convert back to time basis with inverse STFT
         return torch.istft(
