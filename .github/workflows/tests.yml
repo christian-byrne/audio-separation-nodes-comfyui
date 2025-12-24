@@ -17,21 +17,16 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install tooling
-        working-directory: custom_nodes/audio-separation-nodes-comfyui
         run: |
           python -m pip install --upgrade pip
           python -m pip install -e '.[test,dev]'
       - name: Ruff format check
-        working-directory: custom_nodes/audio-separation-nodes-comfyui
         run: ruff format --check src tests
       - name: Ruff lint
-        working-directory: custom_nodes/audio-separation-nodes-comfyui
         run: ruff check src tests
       - name: Python bytecode compile
-        working-directory: custom_nodes/audio-separation-nodes-comfyui
         run: python -m compileall src
       - name: Run tests
-        working-directory: custom_nodes/audio-separation-nodes-comfyui
         run: pytest tests
 
   windows:
@@ -45,19 +40,14 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install tooling
-        working-directory: custom_nodes/audio-separation-nodes-comfyui
         run: |
           python -m pip install --upgrade pip
           python -m pip install -e ".[test,dev]"
       - name: Ruff format check
-        working-directory: custom_nodes/audio-separation-nodes-comfyui
         run: ruff format --check src tests
       - name: Ruff lint
-        working-directory: custom_nodes/audio-separation-nodes-comfyui
         run: ruff check src tests
       - name: Python bytecode compile
-        working-directory: custom_nodes/audio-separation-nodes-comfyui
         run: python -m compileall src
       - name: Run tests
-        working-directory: custom_nodes/audio-separation-nodes-comfyui
         run: pytest tests
