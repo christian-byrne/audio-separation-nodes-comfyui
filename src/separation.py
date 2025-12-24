@@ -61,7 +61,6 @@ class AudioSeparation:
         chunk_length: float = 10.0,
         chunk_overlap: float = 0.1,
     ) -> Tuple[AUDIO, AUDIO, AUDIO, AUDIO]:
-
         device: torch.device = comfy.model_management.get_torch_device()
         waveform: torch.Tensor = audio["waveform"]
         waveform = waveform.squeeze(0).to(device)
@@ -101,7 +100,6 @@ class AudioSeparation:
     def sources_to_tuple(
         self, sources: Dict[str, torch.Tensor]
     ) -> Tuple[AUDIO, AUDIO, AUDIO, AUDIO]:
-
         output_order = ["bass", "drums", "other", "vocals"]
         outputs = []
         for source in output_order:

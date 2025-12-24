@@ -1,37 +1,13 @@
 import os
-import platform
-import subprocess
 import tempfile
+import uuid
 from pathlib import Path
+from typing import Optional, Tuple
 
 import torch
 import torchaudio
-
-
-def is_safe_path(path: str, strict: bool = False) -> bool:
-    """
-    Check if a path is within the current working directory.
-
-    When AUDIO_SEP_STRICT_PATHS is set, restricts file access to the current
-    working directory subtree to prevent path traversal attacks in multi-tenant
-    environments.
-
-    Args:
-        path: The file path to validate.
-        strict: If True, enforce path restrictions regardless of env var.
-
-    Returns:
-        True if the path is allowed, False otherwise.
-    """
-    if "AUDIO_SEP_STRICT_PATHS" not in os.environ and not strict:
-        return True
-    basedir = os.path.abspath(".")
-    try:
-        common_path = os.path.commonpath([basedir, os.path.abspath(path)])
-    except ValueError:
-        # Paths are on different drives (Windows)
-        return False
-    return common_path == basedir
+from comfy_api.input_impl import VideoFromFile
+from comfy_api.input.video_types import VideoInput
 
 
 try:
@@ -42,8 +18,8 @@ except ImportError:
     from moviepy import VideoFileClip, AudioFileClip
 
 
-from typing import Tuple
 from ._types import AUDIO
+from .audio_video_logic import compute_trim_window
 
 import folder_paths
 
@@ -54,13 +30,7 @@ class AudioVideoCombine:
         return {
             "required": {
                 "audio": ("AUDIO",),
-                "video_path": (
-                    "STRING",
-                    {
-                        "default": "/path/to/video.mp4",
-                        "tooltip": "The absolute file path to the video file to which the audio will be added.",
-                    },
-                ),
+                "video": ("VIDEO",),
             },
             "optional": {
                 "video_start_time": (
@@ -73,83 +43,74 @@ class AudioVideoCombine:
                 "video_end_time": (
                     "STRING",
                     {
-                        "default": "1:00",
-                        "tooltip": "The video will be trimmed to end at this time. The format is MM:SS.",
-                    },
-                ),
-                "auto_open": (
-                    "BOOLEAN",
-                    {
-                        "default": False,
-                        "label_on": "Auto open after combining",
-                        "description": "Don't auto open after combining",
-                        "tooltip": "Whether to automatically open the combined video with the default video player after processing.",
+                        "default": "",
+                        "tooltip": "The video will be trimmed to end at this time. Leave blank to use the full duration.",
                     },
                 ),
             },
         }
 
     FUNCTION = "main"
-    RETURN_TYPES = ("STRING",)
-    RETURN_NAMES = ("saved_video_path",)
+    RETURN_TYPES = ("VIDEO",)
+    RETURN_NAMES = ("video",)
     CATEGORY = "audio"
-    OUTPUT_NODE = True
-    OUTPUT_TOOLTIPS = ("The path to the output video.",)
-    DESCRIPTION = "Replace the audio of a video with a new audio track."
+    OUTPUT_TOOLTIPS = ("The combined video.",)
+    DESCRIPTION = "Replace the audio of a VIDEO input with a new audio track."
 
     def main(
         self,
         audio: AUDIO,
-        video_path: str = "/path/to/video.mp4",
+        video: VideoInput,
         video_start_time: str = "0:00",
-        video_end_time: str = "1:00",
-        auto_open: bool = False,
-    ) -> Tuple[str]:
-
+        video_end_time: str = "",
+    ) -> Tuple[VideoFromFile]:
         waveform: torch.Tensor = audio["waveform"]
         sample_rate: int = audio["sample_rate"]
-        input_path = Path(video_path)
-        if not is_safe_path(video_path):
-            raise ValueError(
-                f"AudioVideoCombine: Path not allowed: {video_path}"
-            )
-        if not input_path.exists():
-            raise FileNotFoundError(
-                f"AudioVideoCombine: Video file not found: {video_path}"
-            )
+        temp_dir = Path(folder_paths.get_temp_directory())
+        temp_dir.mkdir(parents=True, exist_ok=True)
 
-        # Assume that no ":" in input means that the user is trying to specify seconds
-        if ":" not in video_start_time:
-            video_start_time = f"00:{video_start_time}"
-        if ":" not in video_end_time:
-            video_end_time = f"00:{video_end_time}"
+        try:
+            video_duration = video.get_duration()
+        except Exception:
+            video_duration = None
 
-        start_seconds_time = 60 * int(video_start_time.split(":")[0]) + int(
-            video_start_time.split(":")[1]
+        start_seconds_time, end_seconds_time = compute_trim_window(
+            video_start_time,
+            video_end_time,
+            video_duration,
         )
-        end_seconds_time = 60 * int(video_end_time.split(":")[0]) + int(
-            video_end_time.split(":")[1]
-        )
+        clip_duration = end_seconds_time - start_seconds_time
 
-        if start_seconds_time > end_seconds_time:
-            raise ValueError(
-                "AudioVideoCombine: Start time must be less than end time. Start time cannot be after video ends."
+        temp_input_path: Optional[Path] = None
+        source = video.get_stream_source()
+        if isinstance(source, (str, os.PathLike)) and Path(source).exists():
+            video_path = str(source)
+        else:
+            temp_input_path = (
+                temp_dir / f"audio_video_combine_input_{uuid.uuid4().hex}.mp4"
             )
+            video.save_to(str(temp_input_path))
+            video_path = str(temp_input_path)
 
-        output_dir = Path(folder_paths.get_output_directory())
-        filename = input_path.stem
-        new_filename = f"{filename}_0_combined.mp4"
-        index = 0
-        while new_filename in [f.name for f in output_dir.iterdir()]:
-            index += 1
-            new_filename = f"{filename}_{index}_combined.mp4"
+        output_path = temp_dir / f"audio_video_combine_{uuid.uuid4().hex}.mp4"
 
-        new_filepath = str(output_dir / new_filename)
+        target_samples = (
+            int(round(clip_duration * sample_rate)) if clip_duration > 0 else 0
+        )
+        trimmed_waveform = waveform
+        if target_samples > 0 and waveform.shape[-1] > target_samples:
+            trimmed_waveform = waveform[..., :target_samples]
 
-        with tempfile.NamedTemporaryFile(suffix=".wav") as f:
-            torchaudio.save(f.name, waveform.squeeze(0), sample_rate=sample_rate)
+        temp_audio_file = tempfile.NamedTemporaryFile(suffix=".wav", delete=False)
+        temp_audio_file.close()
+        try:
+            torchaudio.save(
+                temp_audio_file.name,
+                trimmed_waveform.squeeze(0),
+                sample_rate=sample_rate,
+            )
             video = VideoFileClip(str(video_path), audio=False)
-            audio = AudioFileClip(f.name)
+            audio = AudioFileClip(temp_audio_file.name)
 
             try:
                 # moviepy<=1.0.3
@@ -160,21 +121,20 @@ class AudioVideoCombine:
                 video = video.subclipped(start_seconds_time, end_seconds_time)
                 video = video.with_audio(audio)
 
-            video.write_videofile(new_filepath, codec="libx264", audio_codec="aac")
+            video.write_videofile(str(output_path), codec="libx264", audio_codec="aac")
 
-        new_filepath = os.path.normpath(new_filepath)
-        auto_open_disabled = os.environ.get(
-            "AUDIO_SEP_DISABLE_AUTO_OPEN", ""
-        ).lower() in ("1", "true", "yes")
-        if auto_open and not auto_open_disabled:
+            video.close()
+            audio.close()
+        finally:
             try:
-                if platform.system() == "Darwin":
-                    subprocess.run(["open", new_filepath])
-                elif platform.system() == "Windows":
-                    subprocess.run(["cmd", "/c", "start", "", new_filepath])
-                else:
-                    subprocess.run(["xdg-open", new_filepath])
-            except Exception:
+                Path(temp_audio_file.name).unlink(missing_ok=True)
+            except OSError:
                 pass
 
-        return (str(new_filepath),)
+        if temp_input_path and temp_input_path.exists():
+            try:
+                temp_input_path.unlink()
+            except OSError:
+                pass
+
+        return (VideoFromFile(str(output_path)),)

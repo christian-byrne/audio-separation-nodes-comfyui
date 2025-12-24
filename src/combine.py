@@ -37,7 +37,6 @@ class AudioCombine:
         audio_2: AUDIO,
         method: str = "add",
     ) -> Tuple[AUDIO]:
-
         waveform_1: torch.Tensor = audio_1["waveform"]
         input_sample_rate_1: int = audio_1["sample_rate"]
 
@@ -67,17 +66,18 @@ class AudioCombine:
         if waveform_2.shape[-1] != min_length:
             waveform_2 = waveform_2[..., :min_length]
 
-        match method:
-            case "add":
-                waveform = waveform_1 + waveform_2
-            case "subtract":
-                waveform = waveform_1 - waveform_2
-            case "multiply":
-                waveform = waveform_1 * waveform_2
-            case "divide":
-                waveform = waveform_1 / waveform_2
-            case "mean":
-                waveform = (waveform_1 + waveform_2) / 2
+        if method == "add":
+            waveform = waveform_1 + waveform_2
+        elif method == "subtract":
+            waveform = waveform_1 - waveform_2
+        elif method == "multiply":
+            waveform = waveform_1 * waveform_2
+        elif method == "divide":
+            waveform = waveform_1 / waveform_2
+        elif method == "mean":
+            waveform = (waveform_1 + waveform_2) / 2
+        else:
+            raise ValueError(f"Unsupported combine method: {method}")
 
         return (
             {
