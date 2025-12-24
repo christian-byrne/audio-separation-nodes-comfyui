@@ -53,6 +53,10 @@ moviepy_module.AudioFileClip = object
 sys.modules.setdefault("moviepy", moviepy_module)
 sys.modules.setdefault("moviepy.editor", editor_module)
 
+folder_paths_module = types.ModuleType("folder_paths")
+folder_paths_module.get_temp_directory = lambda: Path.cwd() / "temp"
+sys.modules.setdefault("folder_paths", folder_paths_module)
+
 module = importlib.import_module("src.combine_video_with_audio")
 
 
