@@ -101,14 +101,16 @@ class AudioVideoCombine:
         if target_samples > 0 and waveform.shape[-1] > target_samples:
             trimmed_waveform = waveform[..., :target_samples]
 
-        with tempfile.NamedTemporaryFile(suffix=".wav") as f:
+        temp_audio_file = tempfile.NamedTemporaryFile(suffix=".wav", delete=False)
+        temp_audio_file.close()
+        try:
             torchaudio.save(
-                f.name,
+                temp_audio_file.name,
                 trimmed_waveform.squeeze(0),
                 sample_rate=sample_rate,
             )
             video = VideoFileClip(str(video_path), audio=False)
-            audio = AudioFileClip(f.name)
+            audio = AudioFileClip(temp_audio_file.name)
 
             try:
                 # moviepy<=1.0.3
@@ -123,6 +125,11 @@ class AudioVideoCombine:
 
             video.close()
             audio.close()
+        finally:
+            try:
+                Path(temp_audio_file.name).unlink(missing_ok=True)
+            except OSError:
+                pass
 
         if temp_input_path and temp_input_path.exists():
             try:
