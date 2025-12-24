@@ -5,6 +5,13 @@ version = "1.4.1"
 license = "LICENSE"
 dependencies = ["librosa==0.10.2", "numpy", "torchaudio>=2.3.0", "moviepy"]
 
+[project.optional-dependencies]
+test = ["pytest"]
+dev = ["ruff"]
+
+[tool.ruff]
+target-version = "py39"
+
 [project.urls]
 Repository = "https://github.com/christian-byrne/audio-separation-nodes-comfyui"
 #  Used by Comfy Registry https://comfyregistry.org
