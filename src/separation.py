@@ -75,6 +75,7 @@ class AudioSeparation:
         self.model_sample_rate = bundle.sample_rate
 
         waveform = ensure_stereo(waveform)
+        waveform = waveform.float()
 
         # Resample to model's expected sample rate
         if self.input_sample_rate_ != self.model_sample_rate:
