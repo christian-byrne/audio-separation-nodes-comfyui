@@ -102,6 +102,9 @@ class MockTensor:
     def __repr__(self):
         return f"MockTensor(shape={self.shape}, device={self.device!r})"
 
+    def float(self):
+        return MockTensor(self._data.astype(np.float32), device=self.device)
+
     @property
     def ndim(self):
         return self._data.ndim
@@ -497,6 +500,24 @@ class TestMainFlow:
         audio = _make_audio(channels=2, frames=44100, sample_rate=_MODEL_SR)
         self.node.main(audio)
         assert called.get("yes")
+
+    def test_float_called_after_ensure_stereo(self, monkeypatch):
+        """Fix #16/#22: waveform passed to the model should be float32, even if input is float64."""
+        captured = {}
+
+        original_sep = self.node.separate_sources
+
+        def spy_separate(model, mix, sr, **kw):
+            captured["dtype"] = mix._data.dtype
+            return original_sep(model, mix, sr, **kw)
+
+        monkeypatch.setattr(self.node, "separate_sources", spy_separate)
+
+        # Use float64 input to verify it gets cast to float32
+        data = np.random.randn(1, 2, 44100).astype(np.float64)
+        audio = {"waveform": MockTensor(data), "sample_rate": _MODEL_SR}
+        self.node.main(audio)
+        assert captured["dtype"] == np.float32, "waveform should be float32 after .float() call"
 
     def test_resample_called_when_rates_differ(self, monkeypatch):
         """Resample should be instantiated when input SR != model SR."""

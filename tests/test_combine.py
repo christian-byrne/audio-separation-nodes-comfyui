@@ -13,30 +13,31 @@ import pytest
 
 
 class MockTensor:
-    def __init__(self, data: np.ndarray):
+    def __init__(self, data: np.ndarray, device: str = "cpu"):
         self._data = np.asarray(data, dtype=np.float64)
+        self.device = device
 
     @property
     def shape(self):
         return self._data.shape
 
     def to(self, device):
-        return self
+        return MockTensor(self._data, device=str(device))
 
     def __getitem__(self, key):
-        return MockTensor(self._data[key])
+        return MockTensor(self._data[key], device=self.device)
 
     def __add__(self, other):
-        return MockTensor(self._data + _unwrap(other))
+        return MockTensor(self._data + _unwrap(other), device=self.device)
 
     def __sub__(self, other):
-        return MockTensor(self._data - _unwrap(other))
+        return MockTensor(self._data - _unwrap(other), device=self.device)
 
     def __mul__(self, other):
-        return MockTensor(self._data * _unwrap(other))
+        return MockTensor(self._data * _unwrap(other), device=self.device)
 
     def __truediv__(self, other):
-        return MockTensor(self._data / _unwrap(other))
+        return MockTensor(self._data / _unwrap(other), device=self.device)
 
     def __eq__(self, other):
         return np.array_equal(self._data, _unwrap(other))
@@ -212,6 +213,24 @@ class TestDifferentSampleRates:
         assert result["sample_rate"] == 48000
         assert len(_resample_calls) == 1
         assert _resample_calls[0] == {"orig_freq": 16000, "new_freq": 48000}
+
+    def test_resampled_waveform_moved_to_cpu_first_lower(self):
+        """Fix #23: resampled waveform_1 should be moved back to cpu."""
+        a1 = _audio([1.0, 2.0, 3.0], sample_rate=22050)
+        a1["waveform"] = a1["waveform"].to("cuda")
+        a2 = _audio([4.0, 5.0, 6.0], sample_rate=44100)
+        a2["waveform"] = a2["waveform"].to("cuda")
+        (result,) = AudioCombine().main(a1, a2, method="add")
+        assert result["waveform"].device == "cpu"
+
+    def test_resampled_waveform_moved_to_cpu_second_lower(self):
+        """Fix #23: resampled waveform_2 should be moved back to cpu."""
+        a1 = _audio([1.0, 2.0, 3.0], sample_rate=48000)
+        a1["waveform"] = a1["waveform"].to("cuda")
+        a2 = _audio([4.0, 5.0, 6.0], sample_rate=16000)
+        a2["waveform"] = a2["waveform"].to("cuda")
+        (result,) = AudioCombine().main(a1, a2, method="add")
+        assert result["waveform"].device == "cpu"
 
 
 class TestUnsupportedMethod:

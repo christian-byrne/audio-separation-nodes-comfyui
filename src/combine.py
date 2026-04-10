@@ -53,13 +53,13 @@ class AudioCombine:
             if input_sample_rate_1 < input_sample_rate_2:
                 resample = Resample(input_sample_rate_1, input_sample_rate_2).to(device)
                 waveform_1: torch.Tensor = resample(waveform_1.to(device))
-                waveform_1.to("cpu")
                 output_sample_rate = input_sample_rate_2
             else:
                 resample = Resample(input_sample_rate_2, input_sample_rate_1).to(device)
                 waveform_2: torch.Tensor = resample(waveform_2.to(device))
-                waveform_2.to("cpu")
                 output_sample_rate = input_sample_rate_1
+            waveform_1 = waveform_1.to("cpu")
+            waveform_2 = waveform_2.to("cpu")
         else:
             output_sample_rate = input_sample_rate_1
 
