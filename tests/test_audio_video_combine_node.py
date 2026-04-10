@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from pathlib import Path
 import importlib
 import sys
 import types
+from pathlib import Path
 
 import numpy as np
 import pytest
@@ -32,7 +32,7 @@ else:
 input_impl_module = types.ModuleType("comfy_api.input_impl")
 input_impl_module.VideoFromFile = _DummyVideoFromFile
 sys.modules["comfy_api.input_impl"] = input_impl_module
-setattr(comfy_api, "input_impl", input_impl_module)
+comfy_api.input_impl = input_impl_module
 
 input_module = types.ModuleType("comfy_api.input")
 input_module.__path__ = []
@@ -40,8 +40,8 @@ video_types_module = types.ModuleType("comfy_api.input.video_types")
 video_types_module.VideoInput = object
 sys.modules["comfy_api.input"] = input_module
 sys.modules["comfy_api.input.video_types"] = video_types_module
-setattr(input_module, "video_types", video_types_module)
-setattr(comfy_api, "input", input_module)
+input_module.video_types = video_types_module
+comfy_api.input = input_module
 
 moviepy_module = types.ModuleType("moviepy")
 editor_module = types.ModuleType("moviepy.editor")

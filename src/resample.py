@@ -1,25 +1,27 @@
-import torch
-from torchaudio.transforms import Resample
+from __future__ import annotations
 
 import comfy.model_management
-
-from typing import Union, Tuple
+import torch
+from torchaudio.transforms import Resample
 
 
 class ChunkResampler:
     """
-    a larger lowpass_filter_width results in a larger resampling kernel, and therefore increases computation time for both the kernel computation and convolution
+    a larger lowpass_filter_width results in a larger resampling kernel, and therefore increases
+    computation time for both the kernel computation and convolution
 
-    using sinc_interp_kaiser results in longer computation times than the default sinc_interp_hann because it is more complex to compute the intermediate window values
+    using sinc_interp_kaiser results in longer computation times than the default sinc_interp_hann
+    because it is more complex to compute the intermediate window values
 
-    a large GCD between the sample and resample rate will result in a simplification that allows for a smaller kernel and faster kernel computation.
+    a large GCD between the sample and resample rate will result in a simplification that allows
+    for a smaller kernel and faster kernel computation.
 
     """
 
     def __init__(
         self,
-        orig_freq: Union[int, float],
-        new_freq: Union[int, float],
+        orig_freq: int | float,
+        new_freq: int | float,
         chunk_size_seconds: int = 2,
     ):
         if orig_freq < 0 or new_freq < 0:
@@ -55,18 +57,14 @@ class ChunkResampler:
         waveform = waveform.to(self.device)
 
         with torch.no_grad():
-            chunks = torch.split(
-                waveform, int(self.orig_freq * self.chunk_size_seconds), dim=-1
-            )
+            chunks = torch.split(waveform, int(self.orig_freq * self.chunk_size_seconds), dim=-1)
             resampled_chunks = [self.resample(chunk) for chunk in chunks]
             resampled_waveform = torch.cat(resampled_chunks, dim=-1)
 
         return resampled_waveform.to("cpu")
 
     @staticmethod
-    def reduce_ratio(
-        num1: Union[float, int], num2: Union[float, int]
-    ) -> Tuple[int, int]:
+    def reduce_ratio(num1: float | int, num2: float | int) -> tuple[int, int]:
         """Reduces a ratio to its smallest **integer** form.
 
         Args:

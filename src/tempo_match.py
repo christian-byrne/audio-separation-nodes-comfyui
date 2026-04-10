@@ -1,7 +1,11 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from .utils import estimate_tempo, time_shift
 
-from typing import Tuple
-from ._types import AUDIO
+if TYPE_CHECKING:
+    from ._types import AUDIO
 
 
 class TempoMatch:
@@ -17,13 +21,13 @@ class TempoMatch:
     FUNCTION = "main"
     RETURN_TYPES = ("AUDIO", "AUDIO")
     CATEGORY = "audio"
-    DESCRIPTION = "Match the tempo of two audio tracks by time-stretching them both to match the average tempo between them. E.g., if one audio track is 120 BPM and the other is 100 BPM, both will be time-stretched to 110 BPM."
+    DESCRIPTION = "Match the tempo of two audio tracks by time-stretching them both to match the average tempo between them. E.g., if one audio track is 120 BPM and the other is 100 BPM, both will be time-stretched to 110 BPM."  # noqa: E501
 
     def main(
         self,
         audio_1: AUDIO,
         audio_2: AUDIO,
-    ) -> Tuple[AUDIO, AUDIO]:
+    ) -> tuple[AUDIO, AUDIO]:
         waveform_1 = audio_1["waveform"].squeeze(0)
         input_sample_rate_1 = audio_1["sample_rate"]
 

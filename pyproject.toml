@@ -6,11 +6,29 @@ license = { file = "LICENSE" }
 dependencies = ["librosa==0.10.2", "numpy", "torchaudio>=2.3.0", "moviepy"]
 
 [project.optional-dependencies]
-test = ["pytest"]
-dev = ["ruff"]
+test = ["pytest", "pytest-cov"]
+dev = ["ruff>=0.14.0"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "--cov=src --cov-report=term-missing --cov-fail-under=90"
 
 [tool.ruff]
 target-version = "py39"
+line-length = 120
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B", "SIM", "TCH"]
+per-file-ignores = {"tests/*" = ["E402"]}
+
+[tool.ruff.lint.isort]
+known-third-party = ["torch", "torchaudio", "librosa", "numpy", "moviepy", "comfy", "comfy_api", "folder_paths"]
+
+[tool.mypy]
+python_version = "3.9"
+warn_return_any = true
+warn_unused_configs = true
+ignore_missing_imports = true
 
 [project.urls]
 Repository = "https://github.com/christian-byrne/audio-separation-nodes-comfyui"

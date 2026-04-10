@@ -2,14 +2,12 @@
 
 from __future__ import annotations
 
-from typing import Optional, Tuple
-
 
 class AudioVideoCombineError(ValueError):
     """Custom error to allow targeted unit testing."""
 
 
-def parse_timestamp(value: str, default: Optional[float]) -> float:
+def parse_timestamp(value: str, default: float | None) -> float:
     """Convert ``HH:MM:SS``/``MM:SS`` strings (or seconds) into a float."""
 
     normalized = (value or "").strip()
@@ -35,9 +33,7 @@ def parse_timestamp(value: str, default: Optional[float]) -> float:
     elif len(parts) == 3:
         hours, minutes, seconds = parts
     else:
-        raise AudioVideoCombineError(
-            f"AudioVideoCombine: Invalid timestamp '{value}'. Expected MM:SS or HH:MM:SS."
-        )
+        raise AudioVideoCombineError(f"AudioVideoCombine: Invalid timestamp '{value}'. Expected MM:SS or HH:MM:SS.")
 
     try:
         return int(hours) * 3600 + int(minutes) * 60 + float(seconds)
@@ -50,8 +46,8 @@ def parse_timestamp(value: str, default: Optional[float]) -> float:
 def compute_trim_window(
     start_time: str,
     end_time: str,
-    duration_seconds: Optional[float],
-) -> Tuple[float, float]:
+    duration_seconds: float | None,
+) -> tuple[float, float]:
     """Calculate the numeric trim window for the combine node."""
 
     start_seconds = parse_timestamp(start_time, default=0.0)
