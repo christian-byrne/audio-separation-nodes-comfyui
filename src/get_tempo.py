@@ -1,7 +1,11 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from .utils import estimate_tempo
 
-from typing import Tuple
-from ._types import AUDIO
+if TYPE_CHECKING:
+    from ._types import AUDIO
 
 
 class GetTempo:
@@ -22,7 +26,7 @@ class GetTempo:
     def main(
         self,
         audio: AUDIO,
-    ) -> Tuple[AUDIO, AUDIO]:
+    ) -> tuple[AUDIO, AUDIO]:
         waveform = audio["waveform"].squeeze(0)
         sample_rate = audio["sample_rate"]
         tempo = estimate_tempo(waveform, sample_rate)

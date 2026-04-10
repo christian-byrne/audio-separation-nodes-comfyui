@@ -1,27 +1,33 @@
+from __future__ import annotations
+
 import os
 import tempfile
 import uuid
 from pathlib import Path
-from typing import Optional, Tuple
+from typing import TYPE_CHECKING
 
-import torch
 import torchaudio
 from comfy_api.input_impl import VideoFromFile
-from comfy_api.input.video_types import VideoInput
-
 
 try:
     # moviepy<=1.0.3
-    from moviepy.editor import VideoFileClip, AudioFileClip
+    from moviepy.editor import AudioFileClip, VideoFileClip
 except ImportError:
     # moviepy>=2.0.0 (Nov. 2024)
-    from moviepy import VideoFileClip, AudioFileClip
+    from moviepy import AudioFileClip, VideoFileClip
 
 
-from ._types import AUDIO
-from .audio_video_logic import compute_trim_window
+import contextlib
 
 import folder_paths
+
+from .audio_video_logic import compute_trim_window
+
+if TYPE_CHECKING:
+    import torch
+    from comfy_api.input.video_types import VideoInput
+
+    from ._types import AUDIO
 
 
 class AudioVideoCombine:
@@ -44,7 +50,7 @@ class AudioVideoCombine:
                     "STRING",
                     {
                         "default": "",
-                        "tooltip": "The video will be trimmed to end at this time. Leave blank to use the full duration.",
+                        "tooltip": "The video will be trimmed to end at this time. Leave blank to use the full duration.",  # noqa: E501
                     },
                 ),
             },
@@ -63,7 +69,7 @@ class AudioVideoCombine:
         video: VideoInput,
         video_start_time: str = "0:00",
         video_end_time: str = "",
-    ) -> Tuple[VideoFromFile]:
+    ) -> tuple[VideoFromFile]:
         waveform: torch.Tensor = audio["waveform"]
         sample_rate: int = audio["sample_rate"]
         temp_dir = Path(folder_paths.get_temp_directory())
@@ -81,27 +87,23 @@ class AudioVideoCombine:
         )
         clip_duration = end_seconds_time - start_seconds_time
 
-        temp_input_path: Optional[Path] = None
+        temp_input_path: Path | None = None
         source = video.get_stream_source()
         if isinstance(source, (str, os.PathLike)) and Path(source).exists():
             video_path = str(source)
         else:
-            temp_input_path = (
-                temp_dir / f"audio_video_combine_input_{uuid.uuid4().hex}.mp4"
-            )
+            temp_input_path = temp_dir / f"audio_video_combine_input_{uuid.uuid4().hex}.mp4"
             video.save_to(str(temp_input_path))
             video_path = str(temp_input_path)
 
         output_path = temp_dir / f"audio_video_combine_{uuid.uuid4().hex}.mp4"
 
-        target_samples = (
-            int(round(clip_duration * sample_rate)) if clip_duration > 0 else 0
-        )
+        target_samples = int(round(clip_duration * sample_rate)) if clip_duration > 0 else 0
         trimmed_waveform = waveform
         if target_samples > 0 and waveform.shape[-1] > target_samples:
             trimmed_waveform = waveform[..., :target_samples]
 
-        temp_audio_file = tempfile.NamedTemporaryFile(suffix=".wav", delete=False)
+        temp_audio_file = tempfile.NamedTemporaryFile(suffix=".wav", delete=False)  # noqa: SIM115
         temp_audio_file.close()
         try:
             torchaudio.save(
@@ -126,15 +128,11 @@ class AudioVideoCombine:
             video.close()
             audio.close()
         finally:
-            try:
+            with contextlib.suppress(OSError):
                 Path(temp_audio_file.name).unlink(missing_ok=True)
-            except OSError:
-                pass
 
         if temp_input_path and temp_input_path.exists():
-            try:
+            with contextlib.suppress(OSError):
                 temp_input_path.unlink()
-            except OSError:
-                pass
 
         return (VideoFromFile(str(output_path)),)

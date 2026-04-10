@@ -1,7 +1,11 @@
-import torch
+from __future__ import annotations
 
-from typing import Tuple
-from ._types import AUDIO
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    import torch
+
+    from ._types import AUDIO
 
 
 class AudioCrop:
@@ -35,7 +39,7 @@ class AudioCrop:
         audio: AUDIO,
         start_time: str = "0:00",
         end_time: str = "1:00",
-    ) -> Tuple[AUDIO]:
+    ) -> tuple[AUDIO]:
         waveform: torch.Tensor = audio["waveform"]
         sample_rate: int = audio["sample_rate"]
 
@@ -45,16 +49,12 @@ class AudioCrop:
         if ":" not in end_time:
             end_time = f"00:{end_time}"
 
-        start_seconds_time = 60 * int(start_time.split(":")[0]) + int(
-            start_time.split(":")[1]
-        )
+        start_seconds_time = 60 * int(start_time.split(":")[0]) + int(start_time.split(":")[1])
         start_frame = start_seconds_time * sample_rate
         if start_frame >= waveform.shape[-1]:
             start_frame = waveform.shape[-1] - 1
 
-        end_seconds_time = 60 * int(end_time.split(":")[0]) + int(
-            end_time.split(":")[1]
-        )
+        end_seconds_time = 60 * int(end_time.split(":")[0]) + int(end_time.split(":")[1])
         end_frame = end_seconds_time * sample_rate
         if end_frame >= waveform.shape[-1]:
             end_frame = waveform.shape[-1] - 1
@@ -64,9 +64,7 @@ class AudioCrop:
             end_frame = 0
 
         if start_frame > end_frame:
-            raise ValueError(
-                "AudioCrop: Start time must be less than end time and be within the audio length."
-            )
+            raise ValueError("AudioCrop: Start time must be less than end time and be within the audio length.")
 
         return (
             {

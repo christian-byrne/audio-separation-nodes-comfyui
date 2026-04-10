@@ -1,8 +1,9 @@
-import librosa
-import torch
 import math
-import torchaudio.functional as F
+
+import librosa
 import numpy as np
+import torch
+import torchaudio.functional as F
 
 
 def time_shift(
@@ -29,9 +30,7 @@ def time_shift(
     if win_length is None:
         win_length = fft_size
 
-    window = torch.hann_window(
-        win_length, device=waveform.device
-    )  # shape: [win_length]
+    window = torch.hann_window(win_length, device=waveform.device)  # shape: [win_length]
 
     with torch.no_grad():
         complex_spectogram = torch.stft(
@@ -44,13 +43,11 @@ def time_shift(
         )  # shape: [channels, freq, time]
 
         if complex_spectogram.dtype != torch.cfloat:
-            raise TypeError(
-                f"Expected complex-valued STFT for phase vocoder, got dtype {complex_spectogram.dtype}"
-            )
+            raise TypeError(f"Expected complex-valued STFT for phase vocoder, got dtype {complex_spectogram.dtype}")
 
-        phase_advance = torch.linspace(
-            0, math.pi * hop_size, complex_spectogram.shape[1]
-        )[..., None]  #  shape: [freq, 1]
+        phase_advance = torch.linspace(0, math.pi * hop_size, complex_spectogram.shape[1])[
+            ..., None
+        ]  #  shape: [freq, 1]
 
         stretched_spectogram = F.phase_vocoder(
             complex_spectogram, rate, phase_advance
@@ -75,9 +72,7 @@ def estimate_tempo(waveform: torch.Tensor, sample_rate: int) -> float:
     if waveform.dim() == 3:
         waveform = waveform.squeeze(0)
     if waveform.dim() != 2:
-        raise TypeError(
-            f"Expected waveform to be [channels, frames], got {waveform.shape}"
-        )
+        raise TypeError(f"Expected waveform to be [channels, frames], got {waveform.shape}")
 
     onset_env = librosa.onset.onset_strength(
         y=waveform.numpy(),
@@ -109,9 +104,7 @@ def ensure_stereo(audio: torch.Tensor) -> torch.Tensor:
         torch.Tensor: Stereo audio with the same dimensional format as the input.
     """
     if audio.ndim not in (2, 3):
-        raise ValueError(
-            "Audio input must have 2 or 3 dimensions: [channels, frames] or [batch, channels, frames]."
-        )
+        raise ValueError("Audio input must have 2 or 3 dimensions: [channels, frames] or [batch, channels, frames].")
 
     is_batched = audio.ndim == 3
     channels_dim = 1 if is_batched else 0
