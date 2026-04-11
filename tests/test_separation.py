@@ -4,6 +4,7 @@ import importlib
 import sys
 import types
 from unittest.mock import MagicMock, patch
+from zipfile import BadZipFile
 
 import numpy as np
 import pytest
@@ -589,3 +590,66 @@ class TestMainFlow:
         result = self.node.main(audio)
         for r in result:
             assert r["sample_rate"] == _MODEL_SR
+
+
+# ===========================================================================
+# 6. Corrupted model checkpoint handling (#21)
+# ===========================================================================
+
+
+class TestCorruptedModelCheckpoint:
+    def setup_method(self):
+        self.node = AudioSeparation()
+
+    def test_bad_zip_file_raises_runtime_error(self, monkeypatch):
+        """BadZipFile from corrupted checkpoint should be wrapped with a helpful message."""
+        bad_bundle = types.SimpleNamespace(
+            get_model=MagicMock(side_effect=BadZipFile("failed finding central directory")),
+            sample_rate=_MODEL_SR,
+        )
+        monkeypatch.setattr(separation, "HDEMUCS_HIGH_MUSDB_PLUS", bad_bundle)
+
+        audio = _make_audio(channels=2, frames=44100, sample_rate=_MODEL_SR)
+        with pytest.raises(RuntimeError, match="corrupted"):
+            self.node.main(audio)
+
+    def test_runtime_error_from_model_load_wrapped(self, monkeypatch):
+        """RuntimeError during model load should also produce a helpful message."""
+        bad_bundle = types.SimpleNamespace(
+            get_model=MagicMock(side_effect=RuntimeError("invalid load key")),
+            sample_rate=_MODEL_SR,
+        )
+        monkeypatch.setattr(separation, "HDEMUCS_HIGH_MUSDB_PLUS", bad_bundle)
+
+        audio = _make_audio(channels=2, frames=44100, sample_rate=_MODEL_SR)
+        with pytest.raises(RuntimeError, match="Delete the cached model file"):
+            self.node.main(audio)
+
+    def test_corrupted_error_preserves_original_cause(self, monkeypatch):
+        """The original exception should be chained via __cause__."""
+        original = BadZipFile("bad archive")
+        bad_bundle = types.SimpleNamespace(
+            get_model=MagicMock(side_effect=original),
+            sample_rate=_MODEL_SR,
+        )
+        monkeypatch.setattr(separation, "HDEMUCS_HIGH_MUSDB_PLUS", bad_bundle)
+
+        audio = _make_audio(channels=2, frames=44100, sample_rate=_MODEL_SR)
+        with pytest.raises(RuntimeError) as exc_info:
+            self.node.main(audio)
+        assert exc_info.value.__cause__ is original
+
+    def test_to_device_error_not_wrapped(self, monkeypatch):
+        """RuntimeError from .to(device) (e.g. CUDA OOM) should NOT be wrapped as 'corrupted'."""
+        model = _MockModel()
+        model.to = MagicMock(side_effect=RuntimeError("CUDA out of memory"))
+
+        good_bundle = types.SimpleNamespace(
+            get_model=MagicMock(return_value=model),
+            sample_rate=_MODEL_SR,
+        )
+        monkeypatch.setattr(separation, "HDEMUCS_HIGH_MUSDB_PLUS", good_bundle)
+
+        audio = _make_audio(channels=2, frames=44100, sample_rate=_MODEL_SR)
+        with pytest.raises(RuntimeError, match="CUDA out of memory"):
+            self.node.main(audio)
