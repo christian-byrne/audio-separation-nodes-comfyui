@@ -2,6 +2,18 @@
 
 https://github.com/user-attachments/assets/c5cf20de-a17f-438d-81ac-0c392af669cf
 
+# Nodes
+
+| Node | Description |
+|------|-------------|
+| **Audio Separation** | Separate audio into four stems (bass, drums, other, vocals) using [Hybrid Demucs](https://pytorch.org/audio/stable/tutorials/hybrid_demucs_tutorial.html). |
+| **Audio Combine** | Combine two audio tracks by overlaying their waveforms (add, subtract, multiply, divide, mean). |
+| **Audio Crop** | Crop (trim) audio to a specific start and end time. |
+| **Audio Tempo Match** | Match the tempo of two audio tracks by time-stretching both to their average BPM. |
+| **Audio Speed Shift** | Time-stretch or time-compress audio by a given rate. |
+| **Audio Get Tempo** | Get the tempo (BPM) of audio using onset detection. |
+| **Audio Video Combine** | Replace the audio of a VIDEO input with a new audio track. |
+
 # Examples
 
 #### _`Separating Voices in a Video`_
