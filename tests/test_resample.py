@@ -123,22 +123,29 @@ class TestConstructor(unittest.TestCase):
         with self.assertRaises(ValueError):
             ChunkResampler(44100, -1)
 
+    def test_zero_orig_freq_raises(self):
+        with self.assertRaises(ValueError):
+            ChunkResampler(0, 44100)
+
+    def test_zero_new_freq_raises(self):
+        with self.assertRaises(ValueError):
+            ChunkResampler(44100, 0)
+
     # -- clamping -----------------------------------------------------------
 
     def test_ratio_above_upper_clamp(self):
         """change_ratio > UPPER_CLAMP (1.1832) → new_freq is clamped."""
         orig, new = 44100, 60000  # ratio ≈ 1.36
         r = ChunkResampler(orig, new)
-        # After clamping self.new_freq = orig * UPPER_CLAMP, but reduce_ratio
-        # is called with the *original* args, so stored freqs come from that.
-        # Just verify construction succeeds and chunk_size is set.
-        self.assertIsNotNone(r)
+        # After clamping, the effective ratio passed to Resample should be ≈ 1.1832
+        self.assertAlmostEqual(r.resample.new / r.resample.orig, 1.1832, places=2)
 
     def test_ratio_below_lower_clamp(self):
         """change_ratio < LOWER_CLAMP (0.945) → new_freq is clamped."""
         orig, new = 44100, 40000  # ratio ≈ 0.907
         r = ChunkResampler(orig, new)
-        self.assertIsNotNone(r)
+        # After clamping, the effective ratio passed to Resample should be ≈ 0.945
+        self.assertAlmostEqual(r.resample.new / r.resample.orig, 0.945, places=2)
 
     def test_ratio_within_bounds(self):
         """Ratio inside [LOWER_CLAMP, UPPER_CLAMP] → no clamping."""
@@ -238,6 +245,12 @@ class TestTolerance(unittest.TestCase):
         optimal_gcd = math.gcd(orig, int(optimal))
         self.assertGreaterEqual(optimal_gcd, original_gcd)
 
+    def test_tiny_tolerance_returns_target(self):
+        """Very small tolerance should produce zero margin and return the target unchanged."""
+        result = ChunkResampler._find_optimal_freq(44100, 48000, 1e-8)
+        # margin = int(48000 * 1e-8) = 0, so only the target itself is checked
+        self.assertEqual(result, 48000.0)
+
     def test_find_optimal_freq_prefers_44100(self):
         """44100 should be found when searching near 44100 ± tolerance."""
         result = ChunkResampler._find_optimal_freq(44100, 44050, 0.01)
@@ -265,12 +278,13 @@ class TestTolerance(unittest.TestCase):
         # Result should be within ±1000 of target
         self.assertLessEqual(abs(result - 192000), 1000)
 
-    def test_chunk_size_uses_effective_ratio(self):
+    def test_chunk_size_uses_effective_ratio_after_clamp(self):
         """chunk_size_seconds should be based on effective ratio after clamping."""
-        # orig=44100, new=48000, ratio=1.088 → clamped to 44100*1.1832≈52179
-        # But effective ratio after clamping is 1.1832 → diff=0.1832 > 0.08 → cap=1
-        r = ChunkResampler(44100, 48000)
-        self.assertEqual(r.chunk_size_seconds, 1)
+        # orig=44100, new=40000, ratio=0.907 → below LOWER_CLAMP (0.945)
+        # Clamped to 44100*0.945 = 41674.5, effective diff = |1 - 0.945| = 0.055
+        # 0.002 < 0.055 ≤ 0.08 → chunk_size_seconds capped at 2
+        r = ChunkResampler(44100, 40000)
+        self.assertEqual(r.chunk_size_seconds, 2)
 
 
 # ===========================================================================

@@ -32,16 +32,16 @@ class ChunkResampler:
         upper_clamp: float | None = None,
         lower_clamp: float | None = None,
     ):
-        if orig_freq < 0 or new_freq < 0:
+        if orig_freq <= 0 or new_freq <= 0:
             raise ValueError("Frequencies must be positive.")
         if tolerance < 0.0 or tolerance > 1.0:
             raise ValueError("Tolerance must be between 0.0 and 1.0.")
 
-        self.upper_clamp = upper_clamp if upper_clamp is not None else self.DEFAULT_UPPER_CLAMP
-        self.lower_clamp = lower_clamp if lower_clamp is not None else self.DEFAULT_LOWER_CLAMP
-        if self.upper_clamp <= 0 or self.lower_clamp <= 0:
+        uc = upper_clamp if upper_clamp is not None else self.DEFAULT_UPPER_CLAMP
+        lc = lower_clamp if lower_clamp is not None else self.DEFAULT_LOWER_CLAMP
+        if uc <= 0 or lc <= 0:
             raise ValueError("Clamp values must be positive.")
-        if self.upper_clamp <= self.lower_clamp:
+        if uc <= lc:
             raise ValueError("upper_clamp must be greater than lower_clamp.")
 
         self.orig_freq = orig_freq
@@ -49,10 +49,10 @@ class ChunkResampler:
 
         self.chunk_size_seconds = int(chunk_size_seconds)
         change_ratio = new_freq / orig_freq
-        if change_ratio > self.upper_clamp:
-            self.new_freq = self.orig_freq * self.upper_clamp
-        elif change_ratio < self.lower_clamp:
-            self.new_freq = self.orig_freq * self.lower_clamp
+        if change_ratio > uc:
+            self.new_freq = self.orig_freq * uc
+        elif change_ratio < lc:
+            self.new_freq = self.orig_freq * lc
 
         if tolerance > 0.0:
             self.new_freq = self._find_optimal_freq(round(self.orig_freq), self.new_freq, tolerance)
@@ -81,7 +81,7 @@ class ChunkResampler:
         smaller resampling kernel.
         """
         target = int(round(target_freq))
-        margin = min(max(1, int(target * tolerance)), 1000)
+        margin = min(int(target * tolerance), 1000)
         lo = max(1, target - margin)
         hi = target + margin
 
