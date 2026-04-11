@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import math
+
 import comfy.model_management
 import torch
 from torchaudio.transforms import Resample
@@ -18,28 +20,45 @@ class ChunkResampler:
 
     """
 
+    DEFAULT_UPPER_CLAMP = 1.1832
+    DEFAULT_LOWER_CLAMP = 0.945
+
     def __init__(
         self,
         orig_freq: int | float,
         new_freq: int | float,
         chunk_size_seconds: int = 2,
+        tolerance: float = 0.0,
+        upper_clamp: float | None = None,
+        lower_clamp: float | None = None,
     ):
         if orig_freq < 0 or new_freq < 0:
             raise ValueError("Frequencies must be positive.")
+        if tolerance < 0.0 or tolerance > 1.0:
+            raise ValueError("Tolerance must be between 0.0 and 1.0.")
 
-        self.UPPER_CLAMP = 1.1832
-        self.LOWER_CLAMP = 0.945
+        self.upper_clamp = upper_clamp if upper_clamp is not None else self.DEFAULT_UPPER_CLAMP
+        self.lower_clamp = lower_clamp if lower_clamp is not None else self.DEFAULT_LOWER_CLAMP
+        if self.upper_clamp <= 0 or self.lower_clamp <= 0:
+            raise ValueError("Clamp values must be positive.")
+        if self.upper_clamp <= self.lower_clamp:
+            raise ValueError("upper_clamp must be greater than lower_clamp.")
+
         self.orig_freq = orig_freq
         self.new_freq = new_freq
 
         self.chunk_size_seconds = int(chunk_size_seconds)
         change_ratio = new_freq / orig_freq
-        if change_ratio > self.UPPER_CLAMP:
-            self.new_freq = self.orig_freq * self.UPPER_CLAMP
-        elif change_ratio < self.LOWER_CLAMP:
-            self.new_freq = self.orig_freq * self.LOWER_CLAMP
+        if change_ratio > self.upper_clamp:
+            self.new_freq = self.orig_freq * self.upper_clamp
+        elif change_ratio < self.lower_clamp:
+            self.new_freq = self.orig_freq * self.lower_clamp
 
-        diff = abs(1 - change_ratio)
+        if tolerance > 0.0:
+            self.new_freq = self._find_optimal_freq(round(self.orig_freq), self.new_freq, tolerance)
+
+        effective_ratio = self.new_freq / self.orig_freq
+        diff = abs(1 - effective_ratio)
         if diff > 0.08:
             self.chunk_size_seconds = min(self.chunk_size_seconds, 1)
         elif diff > 0.002:
@@ -49,9 +68,33 @@ class ChunkResampler:
 
         # If the frequencies are float, try to convert to int while
         # maintaining ratio (https://github.com/pytorch/audio/issues/1487).
-        self.orig_freq, self.new_freq = ChunkResampler.reduce_ratio(orig_freq, new_freq)
+        self.orig_freq, self.new_freq = ChunkResampler.reduce_ratio(self.orig_freq, self.new_freq)
         self.device = comfy.model_management.get_torch_device()
         self.resample = Resample(self.orig_freq, self.new_freq).to(self.device)
+
+    @staticmethod
+    def _find_optimal_freq(orig_freq: int, target_freq: float, tolerance: float) -> float:
+        """Find a frequency near *target_freq* that shares a large GCD with *orig_freq*.
+
+        Searches integer candidates within ``target_freq * (1 ± tolerance)`` and
+        returns the one whose GCD with *orig_freq* is largest, producing a
+        smaller resampling kernel.
+        """
+        target = int(round(target_freq))
+        margin = min(max(1, int(target * tolerance)), 1000)
+        lo = max(1, target - margin)
+        hi = target + margin
+
+        best_freq = target
+        best_gcd = math.gcd(orig_freq, target)
+
+        for candidate in range(lo, hi + 1):
+            g = math.gcd(orig_freq, candidate)
+            if g > best_gcd:
+                best_gcd = g
+                best_freq = candidate
+
+        return float(best_freq)
 
     def __call__(self, waveform: torch.Tensor) -> torch.Tensor:
         waveform = waveform.to(self.device)
