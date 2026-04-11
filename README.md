@@ -74,10 +74,25 @@ https://github.com/user-attachments/assets/c5cf20de-a17f-438d-81ac-0c392af669cf
 
 &nbsp;
 
+# Stem Mapping
+
+The **Audio Separation** node uses [Hybrid Demucs](https://pytorch.org/audio/stable/tutorials/hybrid_demucs_tutorial.html) to split audio into four stems:
+
+| Output | Contains |
+|--------|----------|
+| **Bass** | Bass guitar, sub-bass, low-frequency instruments |
+| **Drums** | Drums, percussion, hi-hats |
+| **Other** | Everything else — guitars, keyboards, synths, strings, etc. |
+| **Vocals** | Singing, speech, vocal harmonies |
+
+> **Looking for a specific instrument like guitar?** Guitar is included in the
+> **Other** stem. To isolate guitar, separate first, then use the **Audio Combine**
+> node to subtract unwanted elements or further process the "Other" output.
+
 # Requirements
 
-```m
-librosa==0.10.2
+```
+librosa>=0.10.2,<1
 torchaudio>=2.3.0
 numpy
 moviepy
@@ -89,3 +104,37 @@ moviepy
 1. `git clone` this repository in `ComfyUI/custom_nodes` folder
 1. `cd` into the cloned repository
 1. `pip install -r requirements.txt`
+
+# Troubleshooting
+
+<details>
+<summary><b>BadZipFile / "failed finding central directory"</b></summary>
+
+This error means the Hybrid Demucs model checkpoint was corrupted during download.
+Delete the cached file and restart ComfyUI to trigger a fresh download:
+
+```bash
+# Default location (Linux/macOS)
+rm ~/.cache/torch/hub/checkpoints/*.th
+
+# Windows
+del %USERPROFILE%\.cache\torch\hub\checkpoints\*.th
+```
+
+See [#21](https://github.com/christian-byrne/audio-separation-nodes-comfyui/issues/21).
+
+</details>
+
+<details>
+<summary><b>ConnectionResetError on Windows</b></summary>
+
+```
+Exception in callback _ProactorBasePipeTransport._call_connection_lost(None)
+ConnectionResetError: [WinError 10054]
+```
+
+This is harmless Windows asyncio noise — it does not affect audio separation results.
+The error comes from Python's `ProactorEventLoop` closing connections and can be
+safely ignored. See [#9](https://github.com/christian-byrne/audio-separation-nodes-comfyui/issues/9).
+
+</details>

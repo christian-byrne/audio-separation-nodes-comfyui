@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
+from zipfile import BadZipFile
 
 import comfy.model_management
 import torch
@@ -71,7 +72,16 @@ class AudioSeparation:
         self.input_sample_rate_: int = audio["sample_rate"]
 
         bundle = HDEMUCS_HIGH_MUSDB_PLUS
-        model: torch.nn.Module = bundle.get_model().to(device)
+        try:
+            model: torch.nn.Module = bundle.get_model()
+        except (BadZipFile, RuntimeError) as exc:
+            raise RuntimeError(
+                "Failed to load the Hybrid Demucs model — the downloaded checkpoint "
+                "appears to be corrupted. Delete the cached model file and restart "
+                "ComfyUI to trigger a fresh download. The cached file is typically "
+                "located in your torch hub cache directory (~/.cache/torch/hub/checkpoints/)."
+            ) from exc
+        model = model.to(device)
         self.model_sample_rate = bundle.sample_rate
 
         waveform = ensure_stereo(waveform)
