@@ -7,7 +7,7 @@ dependencies = ["librosa>=0.10.2,<1", "numpy", "torchaudio>=2.3.0", "moviepy"]
 
 [project.optional-dependencies]
 test = ["pytest", "pytest-cov"]
-dev = ["ruff>=0.14.0"]
+dev = ["ruff>=0.15.10"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
