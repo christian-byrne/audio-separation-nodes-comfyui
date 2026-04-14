@@ -37,4 +37,4 @@ Repository = "https://github.com/christian-byrne/audio-separation-nodes-comfyui"
 [tool.comfy]
 PublisherId = "christian-byrne"
 DisplayName = "audio-separation-nodes-comfyui"
-Icon = "https://img.icons8.com/?size=100&id=gSULe4i1JTpL&format=png&color=000000"
+Icon = "https://img.icons8.com/?size=100&id=gSULe4iJTpL&format=png&color=000000"
